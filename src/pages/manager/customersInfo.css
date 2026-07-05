@@ -1,0 +1,80 @@
+/* Manager Customer Info */
+
+.manager-customers-section {
+  margin-top: 8px;
+}
+
+.manager-customers-section .manager-section-title {
+  margin: 0 0 16px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.manager-customers-table .manager-col-actions {
+  min-width: 120px;
+  width: 120px;
+}
+
+.manager-customers-table .manager-col-id {
+  min-width: 70px;
+  width: 70px;
+}
+
+.manager-customers-table .customer-info-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 180px;
+}
+
+.manager-customers-table .customer-info-cell .info-icon {
+  color: #511C00;
+  flex-shrink: 0;
+  font-size: 0.95rem;
+}
+
+.manager-customers-table .info-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.manager-customers-table .info-detail {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.manager-customers-table .address-cell {
+  max-width: 280px;
+  white-space: normal;
+  line-height: 1.45;
+}
+
+.manager-customers-table .date-cell {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.manager-customers-count {
+  font-size: 0.9rem;
+  color: #666;
+  margin: -8px 0 14px;
+}
+
+.dark-theme .manager-customers-section .manager-section-title {
+  color: var(--text-primary, #eee);
+}
+
+.dark-theme .manager-customers-table .info-name {
+  color: var(--text-primary, #eee);
+}
+
+.dark-theme .manager-customers-table .info-detail,
+.dark-theme .manager-customers-count {
+  color: var(--text-secondary, #aaa);
+}
+
+.dark-theme .manager-customers-table .customer-info-cell .info-icon {
+  color: #f4a261;
+}

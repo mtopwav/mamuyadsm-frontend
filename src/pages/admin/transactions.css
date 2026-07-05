@@ -1,0 +1,461 @@
+/* Admin Transactions (finance/accountant layout) */
+
+.finance-dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--bg-primary, #f5f7fa);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  color: var(--text-primary, #333);
+}
+
+.finance-header {
+  background: var(--bg-secondary, #fff);
+  padding: 20px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--card-shadow, 0 2px 4px rgba(0, 0, 0, 0.1));
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border-color, #e0e0e0);
+}
+
+.finance-content {
+  padding: 30px;
+  background-color: var(--bg-primary, #f5f7fa);
+}
+
+.transactions-intro {
+  margin-bottom: 20px;
+}
+
+.transactions-page-title {
+  margin: 0 0 6px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.transactions-page-desc {
+  margin: 0;
+  color: #6c757d;
+  font-size: 0.95rem;
+}
+
+.transactions-stats {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+}
+
+.transactions-stats .stat-title {
+  margin: 0 0 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.transactions-section {
+  background: var(--bg-secondary, #fff);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  border: 1px solid var(--border-color, #e9ecef);
+}
+
+.section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #511C00;
+}
+
+.section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.filter-icon {
+  color: #6c757d;
+}
+
+.filter-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.filter-select,
+.search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.filter-clear-dates {
+  border: 1px solid #dee2e6;
+  background: #f8f9fa;
+  color: #333;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.filter-clear-dates:hover {
+  background: #e9ecef;
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+  min-width: 220px;
+}
+
+.search-icon {
+  color: #6c757d;
+}
+
+.admin-operation-date-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 14px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-operation-date-btn:hover,
+.admin-operation-date-btn.active {
+  border-color: #511C00;
+  color: #511C00;
+  background: #fdf8f6;
+}
+
+.admin-date-filter-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #511C00;
+}
+
+.admin-operation-date-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  background: #fafbfc;
+}
+
+.table-container {
+  overflow: auto;
+  max-height: 65vh;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+}
+
+.transactions-table {
+  width: 100%;
+  min-width: 1100px;
+  border-collapse: collapse;
+}
+
+.transactions-table thead {
+  background: linear-gradient(180deg, #fafbfc 0%, #f1f3f5 100%);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.transactions-table th {
+  padding: 14px 16px;
+  text-align: left;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #511C00;
+  border-bottom: 2px solid #e9ecef;
+  white-space: nowrap;
+}
+
+.transactions-table td {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f0f0f0;
+  vertical-align: middle;
+  font-size: 0.92rem;
+  color: #495057;
+}
+
+.transactions-table tbody tr:hover {
+  background: rgba(81, 28, 0, 0.04);
+}
+
+.txn-customer-cell .txn-name {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.txn-customer-cell .txn-detail {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 2px;
+}
+
+.txn-amount {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.payment-method-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: #f1f3f5;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.status-badge.approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-badge.pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-badge.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.action-buttons {
+  display: inline-flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff;
+  background: #511C00;
+}
+
+.action-btn.view {
+  background: #17a2b8;
+}
+
+.action-btn.reject {
+  background: #dc3545;
+}
+
+.action-btn:hover {
+  opacity: 0.92;
+}
+
+.no-data {
+  text-align: center;
+  padding: 32px 16px;
+  color: #6c757d;
+}
+
+/* View modal */
+.transactions-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.transactions-modal-content {
+  width: min(760px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+}
+
+.transactions-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.transactions-modal-header h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #511C00;
+}
+
+.transactions-modal-close {
+  border: none;
+  background: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+  line-height: 1;
+}
+
+.transactions-modal-body {
+  padding: 22px;
+}
+
+.transactions-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 22px;
+  border-top: 1px solid #e9ecef;
+}
+
+.transactions-modal-btn {
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+}
+
+.transactions-modal-btn.secondary {
+  background: #f1f3f5;
+  color: #333;
+}
+
+.txn-form-section {
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.txn-form-section legend {
+  padding: 0 8px;
+  font-weight: 700;
+  color: #511C00;
+}
+
+.txn-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+}
+
+.txn-form-field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #6c757d;
+  margin-bottom: 4px;
+}
+
+.txn-form-value {
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+.txn-items-table-wrap {
+  overflow: auto;
+}
+
+.txn-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.txn-items-table th,
+.txn-items-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+}
+
+.txn-items-table thead {
+  background: #f8f9fa;
+}
+
+@media (max-width: 768px) {
+  .finance-content {
+    padding: 16px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .section-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    width: 100%;
+  }
+}
