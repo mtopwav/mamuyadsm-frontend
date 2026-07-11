@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import { 
   FaChartLine, 
   FaBox, 
-  FaMoneyBillAlt, 
   FaUsers, 
   FaShoppingCart,
   FaBars,
@@ -132,10 +131,6 @@ function Messages() {
           <Link to="/admin/employees" className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px 20px', color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none', transition: 'all 0.3s', borderLeft: '3px solid transparent' }}>
             <FaUsers style={{ fontSize: '1.2rem', minWidth: '20px' }} />
             <span style={{ opacity: sidebarOpen ? 1 : 0, width: sidebarOpen ? 'auto' : 0, overflow: 'hidden', transition: 'opacity 0.3s' }}>{t.employees}</span>
-          </Link>
-          <Link to="/admin/finances" className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px 20px', color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none', transition: 'all 0.3s', borderLeft: '3px solid transparent' }}>
-            <FaMoneyBillAlt style={{ fontSize: '1.2rem', minWidth: '20px' }} />
-            <span style={{ opacity: sidebarOpen ? 1 : 0, width: sidebarOpen ? 'auto' : 0, overflow: 'hidden', transition: 'opacity 0.3s' }}>{t.finances}</span>
           </Link>
           <Link
             to="/admin/transactions"

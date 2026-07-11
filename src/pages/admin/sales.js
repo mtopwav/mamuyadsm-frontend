@@ -839,10 +839,6 @@ function Sales() {
             <FaUsers className="nav-icon" />
             <span>{t.employees}</span>
           </Link>
-          <Link to="/admin/finances" className="nav-item">
-            <FaMoneyBillAlt className="nav-icon" />
-            <span>{t.finances}</span>
-          </Link>
           <Link
             to="/admin/transactions"
             className={'nav-item' + (window.location.pathname === '/admin/transactions' ? ' active' : '')}

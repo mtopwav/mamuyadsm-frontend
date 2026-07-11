@@ -1177,11 +1177,13 @@ function ManagerTransactions() {
     }
   };
 
-  const performStatusChange = async (payment, newStatus, discountInfo) => {
+  const performStatusChange = async (payment, newStatus, discountInfo, paymentType) => {
     const actionText = newStatus === 'Approved' ? 'approve' : 'reject';
     try {
       const approverId = user?.id;
-      const response = await updatePaymentStatus(payment.id, newStatus, approverId);
+      const response = await updatePaymentStatus(payment.id, newStatus, approverId, {
+        payment_type: paymentType,
+      });
       if (!response.success) throw new Error(response.message || 'Failed to update status');
 
       setPayments((prev) =>
@@ -1190,6 +1192,7 @@ function ManagerTransactions() {
             ? {
                 ...p,
                 status: newStatus,
+                payment_type: paymentType ?? p.payment_type,
                 approved_by: approverId,
                 approver_name: user?.full_name || user?.username,
                 approved_at: new Date().toISOString()
@@ -1308,25 +1311,7 @@ function ManagerTransactions() {
 
     if (!isConfirmed || !selectedPaymentType) return;
 
-    try {
-      const detailsRes = await apiRequest(`/payments/${payment.id}/details`, {
-        method: 'PUT',
-        body: { payment_type: selectedPaymentType }
-      });
-      if (!detailsRes?.success) {
-        throw new Error(detailsRes?.message || 'Failed to save payment type');
-      }
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message || 'Failed to save payment type.',
-        confirmButtonColor: '#511C00'
-      });
-      return;
-    }
-
-    await performStatusChange(payment, newStatus, { status: 'none', amount: 0 });
+    await performStatusChange(payment, newStatus, { status: 'none', amount: 0 }, selectedPaymentType);
   };
 
   const handleDeleteApproved = async (payment) => {

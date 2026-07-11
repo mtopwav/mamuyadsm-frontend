@@ -4,7 +4,6 @@ import Swal from 'sweetalert2';
 import {
   FaChartLine,
   FaBox,
-  FaMoneyBillAlt,
   FaUsers,
   FaShoppingCart,
   FaBars,
@@ -549,10 +548,6 @@ function Finances() {
           <Link to="/admin/employees" className="nav-item">
             <FaUsers className="nav-icon" />
             <span>{t.employees}</span>
-          </Link>
-          <Link to="/admin/finances" className="nav-item active">
-            <FaMoneyBillAlt className="nav-icon" />
-            <span>{t.finances}</span>
           </Link>
           <Link
             to="/admin/transactions"

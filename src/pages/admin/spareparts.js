@@ -16,7 +16,6 @@ import autoTable from 'jspdf-autotable';
 import { 
   FaChartLine, 
   FaBox, 
-  FaMoneyBillAlt, 
   FaUsers, 
   FaShoppingCart,
   FaBars,
@@ -932,10 +931,6 @@ function SpareParts() {
           <Link to="/admin/employees" className="nav-item">
             <FaUsers className="nav-icon" />
             <span>{t.employees}</span>
-          </Link>
-          <Link to="/admin/finances" className="nav-item">
-            <FaMoneyBillAlt className="nav-icon" />
-            <span>{t.finances}</span>
           </Link>
           <Link
             to="/admin/transactions"

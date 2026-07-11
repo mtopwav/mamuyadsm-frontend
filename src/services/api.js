@@ -1,18 +1,34 @@
-// Local development only (XAMPP + npm). Not configured for production hosting.
-const LOCAL_BACKEND = "http://localhost:5000";
-
 function getApiBaseUrl() {
   if (process.env.REACT_APP_API_URL) {
     return process.env.REACT_APP_API_URL.replace(/\/$/, "");
   }
 
-  // CRA dev server (npm start) on :3000 — use setupProxy.js
-  if (typeof window !== "undefined" && window.location.port === "3000") {
-    return "/api";
+  if (typeof window !== "undefined") {
+    const { hostname, port, origin } = window.location;
+
+    // CRA dev server (npm start) — setupProxy.js forwards /api → localhost:5000
+    if (port === "3000") {
+      return "/api";
+    }
+
+    // Production — www.mamuyaautospareparts.co.tz (nginx proxies /api to backend)
+    if (
+      hostname === "www.mamuyaautospareparts.co.tz" ||
+      hostname === "mamuyaautospareparts.co.tz"
+    ) {
+      return `${origin}/api`;
+    }
+
+    // Other hosted domains — same-origin /api
+    if (hostname !== "localhost" && hostname !== "127.0.0.1") {
+      return `${origin}/api`;
+    }
+
+    // Local XAMPP — Node backend on port 5000
+    return "http://localhost:5000/api";
   }
 
-  // XAMPP or any other local access — talk directly to the local Node backend
-  return `${LOCAL_BACKEND}/api`;
+  return "/api";
 }
 
 const API_BASE_URL = getApiBaseUrl();
@@ -320,10 +336,14 @@ export const getPayments = (queryParams = {}) => {
  * Update payment status (approve / reject)
  */
 export const updatePaymentStatus = (id, status, approverId, options = {}) => {
-  const { update_loan_status = false } = options;
+  const { update_loan_status = false, payment_type } = options;
+  const body = { status, approver_id: approverId, update_loan_status };
+  if (payment_type != null && String(payment_type).trim() !== "") {
+    body.payment_type = String(payment_type).trim();
+  }
   return apiRequest(`/payments/${id}/status`, {
     method: "PUT",
-    body: { status, approver_id: approverId, update_loan_status }
+    body
   });
 };
 

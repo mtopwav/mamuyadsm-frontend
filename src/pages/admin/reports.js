@@ -4,7 +4,6 @@ import Swal from 'sweetalert2';
 import {
   FaChartLine,
   FaBox,
-  FaMoneyBillAlt,
   FaUsers,
   FaShoppingCart,
   FaBars,
@@ -148,11 +147,6 @@ function AdminReports() {
       title: t.transactions || 'Transactions Report',
       description: 'View and export transaction-level analytics.',
       route: '/admin/transactions'
-    },
-    {
-      title: t.finances || 'Financial Reports',
-      description: 'Check totals across expenses, revenues and salaries.',
-      route: '/admin/finances'
     },
     {
       title: t.sales || 'Sales Performance',
@@ -322,10 +316,6 @@ function AdminReports() {
           <Link to="/admin/employees" className="nav-item">
             <FaUsers className="nav-icon" />
             <span>{t.employees}</span>
-          </Link>
-          <Link to="/admin/finances" className="nav-item">
-            <FaMoneyBillAlt className="nav-icon" />
-            <span>{t.finances}</span>
           </Link>
           <Link
             to="/admin/transactions"

@@ -17,7 +17,6 @@ import {
   FaBox,
   FaShoppingCart,
   FaUsers,
-  FaMoneyBillAlt,
   FaCog,
   FaCalendarAlt,
   FaChartBar,
@@ -631,10 +630,6 @@ function AdminTransactions() {
           <Link to="/admin/employees" className={'nav-item' + (location.pathname === '/admin/employees' ? ' active' : '')}>
             <FaUsers className="nav-icon" />
             <span>Employees</span>
-          </Link>
-          <Link to="/admin/finances" className={'nav-item' + (location.pathname === '/admin/finances' ? ' active' : '')}>
-            <FaMoneyBillAlt className="nav-icon" />
-            <span>Finances</span>
           </Link>
           <Link to="/admin/transactions" className={'nav-item' + (location.pathname === '/admin/transactions' ? ' active' : '')}>
             <FaCalendarAlt className="nav-icon" />
