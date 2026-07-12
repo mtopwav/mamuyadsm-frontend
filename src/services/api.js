@@ -32,25 +32,41 @@ function getApiBaseUrl() {
 }
 
 const API_BASE_URL = getApiBaseUrl();
+const IS_DEV = process.env.NODE_ENV === "development";
+const DEFAULT_TIMEOUT_MS = 20000;
 
 /**
  * Generic API request helper
  */
 export const apiRequest = async (endpoint, options = {}) => {
+  if (typeof navigator !== "undefined" && !navigator.onLine) {
+    throw new Error("There is no Internet Connection...!");
+  }
+
   const path = endpoint.startsWith("/") ? endpoint : `/${endpoint}`;
   const url = `${API_BASE_URL}${path}`;
+  const method = options.method || "GET";
+  const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   const config = {
-    method: options.method || "GET",
+    method,
     headers: {
-      "Content-Type": "application/json",
+      ...(method !== "GET" && method !== "HEAD"
+        ? { "Content-Type": "application/json" }
+        : {}),
       ...(options.headers || {})
     },
-    body: options.body ? JSON.stringify(options.body) : undefined
+    body: options.body ? JSON.stringify(options.body) : undefined,
+    signal: options.signal || controller.signal,
+    cache: options.cache || (method === "GET" ? "default" : "no-store")
   };
 
   try {
-    console.log(`➡️ API Request: ${config.method} ${url}`);
+    if (IS_DEV) {
+      console.log(`➡️ API Request: ${config.method} ${url}`);
+    }
 
     const response = await fetch(url, config);
 
@@ -58,7 +74,9 @@ export const apiRequest = async (endpoint, options = {}) => {
 
     if (!contentType || !contentType.includes("application/json")) {
       const text = await response.text();
-      console.error("❌ Non-JSON response:", text.substring(0, 200));
+      if (IS_DEV) {
+        console.error("Non-JSON response:", text.substring(0, 200));
+      }
       throw new Error(
         response.status === 404
           ? "API route not found. Start the backend (cd backend && npm start) and restart the frontend (npm start)."
@@ -73,18 +91,28 @@ export const apiRequest = async (endpoint, options = {}) => {
       throw new Error(typeof msg === "string" ? msg : "API request failed");
     }
 
-    console.log("✅ API Response:", data);
+    if (IS_DEV) {
+      console.log("API Response:", data);
+    }
     return data;
 
   } catch (error) {
-    console.error("❌ API Error:", error);
+    if (IS_DEV) {
+      console.error("API Error:", error);
+    }
+
+    if (error.name === "AbortError") {
+      throw new Error("Request timed out. Please check your connection and try again.");
+    }
 
     if (
       error.message.includes("Failed to fetch") ||
       error.message.includes("NetworkError")
     ) {
       throw new Error(
-        "Cannot reach the backend. Run: cd backend && npm start (port 5000), then restart the frontend."
+        typeof navigator !== "undefined" && !navigator.onLine
+          ? "There is no Internet Connection...!"
+          : "Cannot reach the backend. Run: cd backend && npm start (port 5000), then restart the frontend."
       );
     }
 
@@ -93,6 +121,8 @@ export const apiRequest = async (endpoint, options = {}) => {
     }
 
     throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
 };
 

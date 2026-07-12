@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { getTheme, applyTheme } from './utils/theme';
 import { getSectionFromPath } from './utils/settingsSection';
@@ -6,27 +6,30 @@ import useAutoLogout from './utils/useAutoLogout';
 import './App.css';
 import Home from './Home';
 import Login from './login';
-import Dashboard from './pages/admin/dashboard';
-import SpareParts from './pages/admin/spareparts';
-import Sales from './pages/admin/sales';
-import Employees from './pages/admin/employees';
-import Finances from './pages/admin/finances';
-import AdminReports from './pages/admin/reports';
-import AdminTransactions from './pages/admin/transactions';
-import Messages from './pages/admin/messages';
-import Settings from './pages/admin/setting';
-import CategoriesBrands from './pages/admin/categories&brands';
-import ManagerDashboard from './pages/manager/dashboard';
-import ManagerTransactions from './pages/manager/transactions';
-import ManagerLoans from './pages/manager/loans';
-import ManagerReports from './pages/manager/reports';
-import ManagerSales from './pages/manager/sales';
-import ManagerSpareparts from './pages/manager/spareparts';
-import ManagerGenerateSales from './pages/manager/generateSales';
-import ManagerCustomersInfo from './pages/manager/customersInfo';
-import ManagerMessages from './pages/manager/messages';
+import OfflineBanner from './components/OfflineBanner';
+import { PageLoader } from './components/LoadingSpinner';
 
-// Applies the current section's theme when route changes so admin/sales/finance/manager each keep their own theme
+// Lazy-load heavy pages so first paint / login stays fast
+const Dashboard = lazy(() => import('./pages/admin/dashboard'));
+const SpareParts = lazy(() => import('./pages/admin/spareparts'));
+const Sales = lazy(() => import('./pages/admin/sales'));
+const Employees = lazy(() => import('./pages/admin/employees'));
+const Finances = lazy(() => import('./pages/admin/finances'));
+const AdminReports = lazy(() => import('./pages/admin/reports'));
+const AdminTransactions = lazy(() => import('./pages/admin/transactions'));
+const Messages = lazy(() => import('./pages/admin/messages'));
+const Settings = lazy(() => import('./pages/admin/setting'));
+const CategoriesBrands = lazy(() => import('./pages/admin/categories&brands'));
+const ManagerDashboard = lazy(() => import('./pages/manager/dashboard'));
+const ManagerTransactions = lazy(() => import('./pages/manager/transactions'));
+const ManagerLoans = lazy(() => import('./pages/manager/loans'));
+const ManagerReports = lazy(() => import('./pages/manager/reports'));
+const ManagerSales = lazy(() => import('./pages/manager/sales'));
+const ManagerSpareparts = lazy(() => import('./pages/manager/spareparts'));
+const ManagerGenerateSales = lazy(() => import('./pages/manager/generateSales'));
+const ManagerCustomersInfo = lazy(() => import('./pages/manager/customersInfo'));
+const ManagerMessages = lazy(() => import('./pages/manager/messages'));
+
 function ThemeApplicator() {
   const location = useLocation();
   useEffect(() => {
@@ -74,40 +77,39 @@ function AutoLogoutWatcher() {
 function App() {
   return (
     <BrowserRouter>
+      <OfflineBanner />
       <ThemeApplicator />
       <AutoLogoutWatcher />
-      <Routes>
-        {/* Public Routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+      <Suspense fallback={<PageLoader message="Loading..." />}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
 
-        {/* Admin Routes */}
-        <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
-        <Route path="/admin/dashboard" element={<Dashboard />} />
-        <Route path="/admin/spareparts" element={<SpareParts />} />
-        <Route path="/admin/sales" element={<Sales />} />
-        <Route path="/admin/employees" element={<Employees />} />
-        <Route path="/admin/finances" element={<Finances />} />
-        <Route path="/admin/reports" element={<AdminReports />} />
-        <Route path="/admin/transactions" element={<AdminTransactions />} />
-        <Route path="/admin/messages" element={<Messages />} />
-        <Route path="/admin/categories-brands" element={<CategoriesBrands />} />
-        <Route path="/admin/settings" element={<Settings />} />
-        
-        {/* Manager Routes */}
-        <Route path="/manager/dashboard" element={<ManagerDashboard />} />
-        <Route path="/manager/transactions" element={<ManagerTransactions />} />
-        <Route path="/manager/loans" element={<ManagerLoans />} />
-        <Route path="/manager/messages" element={<ManagerMessages />} />
-        <Route path="/manager/reports" element={<ManagerReports />} />
-        <Route path="/manager/sales" element={<ManagerSales />} />
-        <Route path="/manager/generate-sales" element={<ManagerGenerateSales />} />
-        <Route path="/manager/spareparts" element={<ManagerSpareparts />} />
-        <Route path="/manager/customers-info" element={<ManagerCustomersInfo />} />
-        
-        {/* Redirect unknown routes to home */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="/admin/dashboard" element={<Dashboard />} />
+          <Route path="/admin/spareparts" element={<SpareParts />} />
+          <Route path="/admin/sales" element={<Sales />} />
+          <Route path="/admin/employees" element={<Employees />} />
+          <Route path="/admin/finances" element={<Finances />} />
+          <Route path="/admin/reports" element={<AdminReports />} />
+          <Route path="/admin/transactions" element={<AdminTransactions />} />
+          <Route path="/admin/messages" element={<Messages />} />
+          <Route path="/admin/categories-brands" element={<CategoriesBrands />} />
+          <Route path="/admin/settings" element={<Settings />} />
+
+          <Route path="/manager/dashboard" element={<ManagerDashboard />} />
+          <Route path="/manager/transactions" element={<ManagerTransactions />} />
+          <Route path="/manager/loans" element={<ManagerLoans />} />
+          <Route path="/manager/messages" element={<ManagerMessages />} />
+          <Route path="/manager/reports" element={<ManagerReports />} />
+          <Route path="/manager/sales" element={<ManagerSales />} />
+          <Route path="/manager/generate-sales" element={<ManagerGenerateSales />} />
+          <Route path="/manager/spareparts" element={<ManagerSpareparts />} />
+          <Route path="/manager/customers-info" element={<ManagerCustomersInfo />} />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

@@ -11,6 +11,7 @@ import {
   FaPlus,
   FaSearch,
   FaEdit,
+  FaTrashAlt,
   FaPhone,
   FaIdCard,
   FaMapMarkerAlt,
@@ -24,7 +25,7 @@ import {
 import './manager-layout.css';
 import './customersInfo.css';
 import logo from '../../images/logo.png';
-import { getCustomers, addCustomer, updateCustomer } from '../../services/api';
+import { getCustomers, addCustomer, updateCustomer, deleteCustomer } from '../../services/api';
 import { getCurrentDateTime } from '../../utils/dateTime';
 import ThemeToggle from '../../components/ThemeToggle';
 import LanguageSelector from '../../components/LanguageSelector';
@@ -228,6 +229,48 @@ function ManagerCustomersInfo() {
       address: customer.address || ''
     });
     setShowEditModal(true);
+  };
+
+  const handleDelete = async (customer) => {
+    const result = await Swal.fire({
+      icon: 'warning',
+      title: t.delete || 'Delete Customer',
+      text: `Are you sure you want to delete "${capitalizeName(customer.name)}"?`,
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: t.delete || 'Yes, delete',
+      cancelButtonText: t.cancel || 'Cancel'
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await deleteCustomer(customer.id);
+      if (!response.success) {
+        throw new Error(response.message || 'Failed to delete customer');
+      }
+      setCustomers((prev) => prev.filter((c) => c.id !== customer.id));
+      if (editingCustomer?.id === customer.id) {
+        setShowEditModal(false);
+        setEditingCustomer(null);
+      }
+      Swal.fire({
+        icon: 'success',
+        title: 'Deleted',
+        text: 'Customer deleted successfully.',
+        confirmButtonColor: '#511C00',
+        timer: 2000,
+        showConfirmButton: false
+      });
+    } catch (error) {
+      console.error('Error deleting customer:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: error.message || 'Failed to delete customer.',
+        confirmButtonColor: '#511C00'
+      });
+    }
   };
 
   const handleUpdateCustomer = async (e) => {
@@ -448,6 +491,14 @@ function ManagerCustomersInfo() {
                             >
                               <FaEdit className="action-icon" />
                               <span className="action-text">{t.edit}</span>
+                            </button>
+                            <button
+                              className="action-btn delete"
+                              title={t.delete || 'Delete customer'}
+                              onClick={() => handleDelete(customer)}
+                            >
+                              <FaTrashAlt className="action-icon" />
+                              <span className="action-text">{t.delete || 'Delete'}</span>
                             </button>
                           </div>
                         </td>
