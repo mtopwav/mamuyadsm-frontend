@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   FaChartLine, 
-  FaBox, 
+  FaBox,
+  FaHistory,
   FaUsers, 
   FaShoppingCart,
   FaBars,
@@ -123,6 +124,10 @@ function Messages() {
           <Link to="/admin/spareparts" className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px 20px', color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none', transition: 'all 0.3s', borderLeft: '3px solid transparent' }}>
             <FaBox style={{ fontSize: '1.2rem', minWidth: '20px' }} />
             <span style={{ opacity: sidebarOpen ? 1 : 0, width: sidebarOpen ? 'auto' : 0, overflow: 'hidden', transition: 'opacity 0.3s' }}>{t.spareParts}</span>
+          </Link>
+          <Link to="/admin/stock-history" className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px 20px', color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none', transition: 'all 0.3s', borderLeft: '3px solid transparent' }}>
+            <FaHistory style={{ fontSize: '1.2rem', minWidth: '20px' }} />
+            <span style={{ opacity: sidebarOpen ? 1 : 0, width: sidebarOpen ? 'auto' : 0, overflow: 'hidden', transition: 'opacity 0.3s' }}>{t.stockHistory}</span>
           </Link>
           <Link to="/admin/sales" className="nav-item" style={{ display: 'flex', alignItems: 'center', gap: '15px', padding: '15px 20px', color: 'rgba(255, 255, 255, 0.8)', textDecoration: 'none', transition: 'all 0.3s', borderLeft: '3px solid transparent' }}>
             <FaShoppingCart style={{ fontSize: '1.2rem', minWidth: '20px' }} />

@@ -12,6 +12,7 @@ import { PageLoader } from './components/LoadingSpinner';
 // Lazy-load heavy pages so first paint / login stays fast
 const Dashboard = lazy(() => import('./pages/admin/dashboard'));
 const SpareParts = lazy(() => import('./pages/admin/spareparts'));
+const StockHistory = lazy(() => import('./pages/admin/stock-history'));
 const Sales = lazy(() => import('./pages/admin/sales'));
 const Employees = lazy(() => import('./pages/admin/employees'));
 const Finances = lazy(() => import('./pages/admin/finances'));
@@ -88,6 +89,7 @@ function App() {
           <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="/admin/dashboard" element={<Dashboard />} />
           <Route path="/admin/spareparts" element={<SpareParts />} />
+          <Route path="/admin/stock-history" element={<StockHistory />} />
           <Route path="/admin/sales" element={<Sales />} />
           <Route path="/admin/employees" element={<Employees />} />
           <Route path="/admin/finances" element={<Finances />} />

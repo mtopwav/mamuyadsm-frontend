@@ -541,6 +541,10 @@ function Finances() {
             <FaBox className="nav-icon" />
             <span>{t.spareParts}</span>
           </Link>
+          <Link to="/admin/stock-history" className="nav-item">
+            <FaHistory className="nav-icon" />
+            <span>{t.stockHistory}</span>
+          </Link>
           <Link to="/admin/sales" className="nav-item">
             <FaShoppingCart className="nav-icon" />
             <span>{t.sales}</span>

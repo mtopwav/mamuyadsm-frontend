@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   FaChartLine, 
-  FaBox, 
+  FaBox,
+  FaHistory,
   FaMoneyBillAlt, 
   FaUsers, 
   FaShoppingCart,
@@ -566,6 +567,10 @@ function Dashboard() {
           <Link to="/admin/spareparts" className="nav-item">
             <FaBox className="nav-icon" />
             <span>{t.spareParts}</span>
+          </Link>
+          <Link to="/admin/stock-history" className="nav-item">
+            <FaHistory className="nav-icon" />
+            <span>{t.stockHistory}</span>
           </Link>
           <Link to="/admin/sales" className="nav-item">
             <FaShoppingCart className="nav-icon" />

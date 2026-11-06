@@ -15,6 +15,7 @@ import {
   FaReceipt,
   FaTags,
   FaBox,
+  FaHistory,
   FaShoppingCart,
   FaUsers,
   FaCog,
@@ -622,6 +623,10 @@ function AdminTransactions() {
           <Link to="/admin/spareparts" className={'nav-item' + (location.pathname === '/admin/spareparts' ? ' active' : '')}>
             <FaBox className="nav-icon" />
             <span>Spare Parts</span>
+          </Link>
+          <Link to="/admin/stock-history" className={'nav-item' + (location.pathname === '/admin/stock-history' ? ' active' : '')}>
+            <FaHistory className="nav-icon" />
+            <span>{t.stockHistory || 'Stock History'}</span>
           </Link>
           <Link to="/admin/sales" className={'nav-item' + (location.pathname === '/admin/sales' ? ' active' : '')}>
             <FaShoppingCart className="nav-icon" />

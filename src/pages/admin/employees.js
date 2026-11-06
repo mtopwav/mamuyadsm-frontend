@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import {
   FaChartLine,
   FaBox,
+  FaHistory,
   FaUsers,
   FaShoppingCart,
   FaBars,
@@ -537,6 +538,10 @@ function Employees() {
           <Link to="/admin/spareparts" className="nav-item">
             <FaBox className="nav-icon" />
             <span>{t.spareParts}</span>
+          </Link>
+          <Link to="/admin/stock-history" className="nav-item">
+            <FaHistory className="nav-icon" />
+            <span>{t.stockHistory}</span>
           </Link>
           <Link to="/admin/sales" className="nav-item">
             <FaShoppingCart className="nav-icon" />

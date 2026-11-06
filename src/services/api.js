@@ -276,6 +276,13 @@ export const getSpareParts = () => {
 };
 
 /**
+ * Stock history for spare parts that were added or updated
+ */
+export const getStockHistory = () => {
+  return apiRequest("/stock-history");
+};
+
+/**
  * Add new spare part
  */
 export const addSparePart = (sparePartData) => {
