@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { FaChartLine, FaBars, FaSignOutAlt, FaUser, FaMoneyBillWave, FaChartBar, FaFileInvoice, FaReceipt, FaCalendarAlt, FaCheckCircle, FaTimesCircle, FaClock, FaBox, FaUsers, FaEnvelope } from 'react-icons/fa';
+import { FaChartLine, FaBars, FaSignOutAlt, FaUser, FaMoneyBillWave, FaWallet, FaChartBar, FaFileInvoice, FaReceipt, FaCalendarAlt, FaCheckCircle, FaTimesCircle, FaClock, FaBox, FaUsers, FaEnvelope } from 'react-icons/fa';
 import Swal from 'sweetalert2';
 import './manager-layout.css';
 import './dashboard.css';
@@ -193,6 +193,10 @@ function ManagerDashboard() {
           <Link to="/manager/loans" className={'nav-item ' + (location.pathname === '/manager/loans' ? 'active' : '')}>
             <FaMoneyBillWave className="nav-icon" />
             <span>{t.loans}</span>
+          </Link>
+          <Link to="/manager/expenses" className={'nav-item ' + (location.pathname === '/manager/expenses' ? 'active' : '')}>
+            <FaWallet className="nav-icon" />
+            <span>{t.expenses}</span>
           </Link>
           <Link to="/manager/reports" className={'nav-item ' + (location.pathname === '/manager/reports' ? 'active' : '')}>
             <FaChartBar className="nav-icon" />

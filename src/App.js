@@ -24,6 +24,7 @@ const CategoriesBrands = lazy(() => import('./pages/admin/categories&brands'));
 const ManagerDashboard = lazy(() => import('./pages/manager/dashboard'));
 const ManagerTransactions = lazy(() => import('./pages/manager/transactions'));
 const ManagerLoans = lazy(() => import('./pages/manager/loans'));
+const ManagerExpenses = lazy(() => import('./pages/manager/expenses'));
 const ManagerReports = lazy(() => import('./pages/manager/reports'));
 const ManagerSales = lazy(() => import('./pages/manager/sales'));
 const ManagerSpareparts = lazy(() => import('./pages/manager/spareparts'));
@@ -102,6 +103,7 @@ function App() {
           <Route path="/manager/dashboard" element={<ManagerDashboard />} />
           <Route path="/manager/transactions" element={<ManagerTransactions />} />
           <Route path="/manager/loans" element={<ManagerLoans />} />
+          <Route path="/manager/expenses" element={<ManagerExpenses />} />
           <Route path="/manager/messages" element={<ManagerMessages />} />
           <Route path="/manager/reports" element={<ManagerReports />} />
           <Route path="/manager/sales" element={<ManagerSales />} />

@@ -19,6 +19,7 @@ import {
   FaReceipt,
   FaCalendarAlt,
   FaMoneyBillWave,
+  FaWallet,
   FaChartBar,
   FaEnvelope
 } from 'react-icons/fa';
@@ -366,6 +367,10 @@ function ManagerCustomersInfo() {
           <Link to="/manager/loans" className={'nav-item ' + (location.pathname === '/manager/loans' ? 'active' : '')}>
             <FaMoneyBillWave className="nav-icon" />
             <span>{t.loans}</span>
+          </Link>
+          <Link to="/manager/expenses" className={'nav-item ' + (location.pathname === '/manager/expenses' ? 'active' : '')}>
+            <FaWallet className="nav-icon" />
+            <span>{t.expenses}</span>
           </Link>
           <Link to="/manager/reports" className={'nav-item ' + (location.pathname === '/manager/reports' ? 'active' : '')}>
             <FaChartBar className="nav-icon" />

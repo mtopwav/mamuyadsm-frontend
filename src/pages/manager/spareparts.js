@@ -10,6 +10,7 @@ import {
   FaFileInvoice,
   FaReceipt,
   FaMoneyBillWave,
+  FaWallet,
   FaChartBar,
   FaBox,
   FaUsers,
@@ -635,6 +636,10 @@ function ManagerSpareparts() {
           <Link to="/manager/loans" className={'nav-item ' + (location.pathname === '/manager/loans' ? 'active' : '')}>
             <FaMoneyBillWave className="nav-icon" />
             <span>Loans</span>
+          </Link>
+          <Link to="/manager/expenses" className={'nav-item ' + (location.pathname === '/manager/expenses' ? 'active' : '')}>
+            <FaWallet className="nav-icon" />
+            <span>{t.expenses}</span>
           </Link>
           <Link to="/manager/reports" className={'nav-item ' + (location.pathname === '/manager/reports' ? 'active' : '')}>
             <FaChartBar className="nav-icon" />
