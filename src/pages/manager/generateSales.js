@@ -20,6 +20,7 @@ import {
 } from 'react-icons/fa';
 import './manager-layout.css';
 import '../sales/dashboard.css';
+import './generateSeles.css';
 import logo from '../../images/logo.png';
 import { getCustomers, getSpareParts, createPayment } from '../../services/api';
 import { getCurrentDateTime } from '../../utils/dateTime';
@@ -432,78 +433,49 @@ function ManagerGenerateSales() {
                 {loadingData ? (
                   <InlineLoader message="Loading customers and spare parts..." size="md" showDots />
                 ) : (
-                  <form onSubmit={handleGenerateSale} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                    <div style={{ gridColumn: '1 / -1' }}>
-                      <label style={{ display: 'block', marginBottom: '8px', fontWeight: '500' }}>
+                  <form onSubmit={handleGenerateSale} className="manager-gs-form">
+                    <div className="manager-gs-span">
+                      <label className="manager-gs-label">
                         Price type
                         <select
+                          className="manager-gs-input manager-gs-select"
                           value={priceType}
                           onChange={(e) => setPriceType(e.target.value)}
-                          style={{ width: '100%', maxWidth: '280px', padding: '10px', marginTop: '5px', border: '1px solid #ddd', borderRadius: '5px', outline: 'none' }}
                         >
                           <option value="retail">Retail price</option>
                           <option value="wholesale">Wholesale price</option>
                         </select>
                       </label>
                     </div>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <label>
+                    <div className="manager-gs-col">
+                      <label className="manager-gs-label">
                         {t.customer} *
-                        <div className="customer-search-container" style={{ position: 'relative', marginTop: '5px' }}>
-                          <div style={{ position: 'relative' }}>
-                            <FaSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#666', zIndex: 1 }} />
+                        <div className="customer-search-container manager-gs-search">
+                          <div className="manager-gs-search-field">
+                            <FaSearch className="manager-gs-search-icon" />
                             <input
                               type="text"
+                              className="manager-gs-input manager-gs-input-search"
                               value={customerSearchInput}
                               onChange={handleCustomerSearchChange}
                               onFocus={handleCustomerFieldFocus}
                               placeholder={t.searchCustomer}
                               required={!selectedCustomerId}
-                              style={{
-                                width: '100%',
-                                padding: '10px 10px 10px 40px',
-                                border: '1px solid #ddd',
-                                borderRadius: '5px',
-                                outline: 'none'
-                              }}
                             />
                           </div>
                           {showCustomerDropdown && filteredCustomers.length > 0 && (
-                            <div style={{
-                              position: 'absolute',
-                              top: '100%',
-                              left: 0,
-                              right: 0,
-                              backgroundColor: 'white',
-                              border: '1px solid #ddd',
-                              borderRadius: '5px',
-                              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                              maxHeight: '200px',
-                              overflowY: 'auto',
-                              zIndex: 1000,
-                              marginTop: '5px'
-                            }}>
+                            <div className="manager-gs-dropdown">
                               {filteredCustomers.map(customer => (
                                 <div
                                   key={customer.id}
+                                  className="manager-gs-option"
                                   onClick={() => handleCustomerSelect(customer)}
-                                  style={{
-                                    padding: '12px 15px',
-                                    cursor: 'pointer',
-                                    borderBottom: '1px solid #f0f0f0',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    transition: 'background-color 0.2s'
-                                  }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f7fa'; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'white'; }}
                                 >
                                   <div>
-                                    <div style={{ fontWeight: '500', color: '#2c3e50' }}>
+                                    <div className="manager-gs-option-title">
                                       {capitalizeName(customer.name)}
                                     </div>
-                                    <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '2px' }}>
+                                    <div className="manager-gs-option-meta">
                                       {customer.phone}
                                     </div>
                                   </div>
@@ -512,105 +484,63 @@ function ManagerGenerateSales() {
                             </div>
                           )}
                           {showCustomerDropdown && filteredCustomers.length === 0 && (
-                            <div style={{
-                              position: 'absolute',
-                              top: '100%',
-                              left: 0,
-                              right: 0,
-                              backgroundColor: 'white',
-                              border: '1px solid #ddd',
-                              borderRadius: '5px',
-                              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                              padding: '12px 15px',
-                              zIndex: 1000,
-                              marginTop: '5px',
-                              color: '#666'
-                            }}>
+                            <div className="manager-gs-dropdown manager-gs-dropdown-empty">
                               No customers found
                             </div>
                           )}
                         </div>
                       </label>
 
-                      <label>
+                      <label className="manager-gs-label">
                         {t.phone}
                         <input
                           type="text"
+                          className="manager-gs-input manager-gs-readonly"
                           value={customerPhone}
                           readOnly
                           placeholder={t.customerPhonePlaceholder}
-                          style={{ width: '100%', padding: '10px', marginTop: '5px', backgroundColor: '#f5f7fa' }}
                         />
                       </label>
                     </div>
 
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      <label>
+                    <div className="manager-gs-col">
+                      <label className="manager-gs-label">
                         {t.totalAmount}
                         <input
                           type="text"
+                          className="manager-gs-input manager-gs-readonly manager-gs-total"
                           value={totalPrice ? `TZS ${formatPrice(totalPrice)}` : 'TZS 0'}
                           readOnly
-                          style={{ width: '100%', padding: '10px', marginTop: '5px', backgroundColor: '#f5f7fa', fontWeight: 'bold', fontSize: '1.1em' }}
                         />
                       </label>
 
-                      <label>
+                      <label className="manager-gs-label">
                         {t.addSparePart}
-                        <div className="part-search-container" style={{ position: 'relative', marginTop: '5px' }}>
-                          <div style={{ position: 'relative' }}>
-                            <FaSearch style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#666', zIndex: 1 }} />
+                        <div className="part-search-container manager-gs-search">
+                          <div className="manager-gs-search-field">
+                            <FaSearch className="manager-gs-search-icon" />
                             <input
                               type="text"
+                              className="manager-gs-input manager-gs-input-search"
                               value={partSearchInput}
                               onChange={handlePartSearchChange}
                               onFocus={() => setShowPartDropdown(true)}
                               placeholder={t.searchSparePart}
-                              style={{
-                                width: '100%',
-                                padding: '10px 10px 10px 40px',
-                                border: '1px solid #ddd',
-                                borderRadius: '5px',
-                                outline: 'none'
-                              }}
                             />
                           </div>
                           {showPartDropdown && partSearchInput && filteredParts.length > 0 && (
-                            <div style={{
-                              position: 'absolute',
-                              top: '100%',
-                              left: 0,
-                              right: 0,
-                              backgroundColor: 'white',
-                              border: '1px solid #ddd',
-                              borderRadius: '5px',
-                              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                              maxHeight: filteredParts.length > 1 ? '200px' : 'auto',
-                              overflowY: filteredParts.length > 1 ? 'auto' : 'visible',
-                              zIndex: 1000,
-                              marginTop: '5px'
-                            }}>
+                            <div className="manager-gs-dropdown">
                               {filteredParts.map(part => (
                                 <div
                                   key={part.id}
+                                  className="manager-gs-option"
                                   onClick={() => handlePartSelect(part)}
-                                  style={{
-                                    padding: '12px 15px',
-                                    cursor: 'pointer',
-                                    borderBottom: '1px solid #f0f0f0',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    transition: 'background-color 0.2s'
-                                  }}
-                                  onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#f5f7fa'; }}
-                                  onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'white'; }}
                                 >
                                   <div>
-                                    <div style={{ fontWeight: '500', color: '#2c3e50' }}>
+                                    <div className="manager-gs-option-title">
                                       {capitalizeName(part.name)}
                                     </div>
-                                    <div style={{ fontSize: '0.85rem', color: '#666', marginTop: '2px' }}>
+                                    <div className="manager-gs-option-meta">
                                       {part.partNumber} - {part.brand} - TZS {formatPrice(priceType === 'wholesale' ? (part.wholesale_price ?? part.unitPrice) : (part.retail_price ?? part.unitPrice))}
                                     </div>
                                   </div>
@@ -619,20 +549,7 @@ function ManagerGenerateSales() {
                             </div>
                           )}
                           {showPartDropdown && partSearchInput && filteredParts.length === 0 && (
-                            <div style={{
-                              position: 'absolute',
-                              top: '100%',
-                              left: 0,
-                              right: 0,
-                              backgroundColor: 'white',
-                              border: '1px solid #ddd',
-                              borderRadius: '5px',
-                              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                              padding: '12px 15px',
-                              zIndex: 1000,
-                              marginTop: '5px',
-                              color: '#666'
-                            }}>
+                            <div className="manager-gs-dropdown manager-gs-dropdown-empty">
                               No spare parts found
                             </div>
                           )}
@@ -640,77 +557,45 @@ function ManagerGenerateSales() {
                       </label>
 
                       {selectedParts.length > 0 && (
-                        <div style={{ marginTop: '10px' }}>
-                          <label style={{ marginBottom: '10px', display: 'block', fontWeight: '500' }}>
+                        <div className="manager-gs-parts">
+                          <label className="manager-gs-label manager-gs-parts-label">
                             {t.selectedParts} ({selectedParts.length})
                           </label>
-                          <div style={{
-                            border: '1px solid #ddd',
-                            borderRadius: '5px',
-                            maxHeight: '300px',
-                            overflowY: 'auto',
-                            backgroundColor: '#f9f9f9'
-                          }}>
-                            {selectedParts.map((selectedPart, index) => {
+                          <div className="manager-gs-parts-list">
+                            {selectedParts.map((selectedPart) => {
                               const unitPrice = getUnitPrice(selectedPart.part);
                               const partTotal = unitPrice * Number(selectedPart.quantity);
                               return (
                                 <div
                                   key={selectedPart.partId}
-                                  style={{
-                                    padding: '12px 15px',
-                                    borderBottom: index < selectedParts.length - 1 ? '1px solid #eee' : 'none',
-                                    display: 'flex',
-                                    justifyContent: 'space-between',
-                                    alignItems: 'center',
-                                    gap: '10px'
-                                  }}
+                                  className="manager-gs-part-row"
                                 >
-                                  <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: '500', color: '#2c3e50', marginBottom: '5px' }}>
+                                  <div className="manager-gs-part-info">
+                                    <div className="manager-gs-option-title">
                                       {capitalizeName(selectedPart.part.name)}
                                     </div>
-                                    <div style={{ fontSize: '0.85rem', color: '#666', marginBottom: '8px' }}>
+                                    <div className="manager-gs-option-meta">
                                       {selectedPart.part.partNumber} - TZS {formatPrice(getUnitPrice(selectedPart.part))} each ({priceType === 'wholesale' ? 'wholesale' : 'retail'})
                                     </div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                      <span style={{ fontSize: '0.9rem', color: '#666' }}>{t.quantity}:</span>
+                                    <div className="manager-gs-qty-row">
+                                      <span>{t.quantity}:</span>
                                       <input
                                         type="text"
                                         inputMode="numeric"
+                                        className="manager-gs-input manager-gs-qty"
                                         placeholder="Enter quantity"
                                         value={selectedPart.quantity === 0 ? '' : selectedPart.quantity}
                                         onChange={(e) => handleUpdatePartQuantity(selectedPart.partId, e.target.value)}
-                                        style={{
-                                          width: '80px',
-                                          padding: '5px 8px',
-                                          border: '1px solid #ddd',
-                                          borderRadius: '3px',
-                                          outline: 'none'
-                                        }}
                                       />
-                                      <span style={{ fontSize: '0.9rem', color: '#666', marginLeft: '10px' }}>
+                                      <span className="manager-gs-line-total">
                                         {t.total} ({priceType === 'wholesale' ? 'wholesale' : 'retail'}): TZS {formatPrice(partTotal)}
                                       </span>
                                     </div>
                                   </div>
                                   <button
                                     type="button"
+                                    className="manager-gs-remove"
                                     onClick={() => handleRemovePart(selectedPart.partId)}
-                                    style={{
-                                      padding: '8px 12px',
-                                      backgroundColor: '#dc3545',
-                                      color: 'white',
-                                      border: 'none',
-                                      borderRadius: '5px',
-                                      cursor: 'pointer',
-                                      display: 'flex',
-                                      alignItems: 'center',
-                                      gap: '5px',
-                                      fontSize: '0.9rem'
-                                    }}
-                                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#c82333'; }}
-                                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = '#dc3545'; }}
                                   >
                                     <FaTimes /> {t.remove}
                                   </button>
@@ -722,13 +607,12 @@ function ManagerGenerateSales() {
                       )}
                     </div>
 
-                    <div style={{ gridColumn: '1 / -1', display: 'flex', justifyContent: 'flex-end', marginTop: '10px' }}>
+                    <div className="manager-gs-actions">
                       <button
                         type="submit"
-                        className="action-btn primary"
-                        style={{ padding: '10px 20px', fontSize: '1rem' }}
+                        className="action-btn primary manager-gs-submit"
                       >
-                        <FaFileInvoice style={{ marginRight: '8px' }} />
+                        <FaFileInvoice />
                         {t.generateSale}
                       </button>
                     </div>
