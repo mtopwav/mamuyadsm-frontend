@@ -31,6 +31,7 @@ import { getPayments } from '../../services/api';
 import { useTranslation } from '../../utils/useTranslation';
 import { getCurrentDateTime } from '../../utils/dateTime';
 import { PageLoader, InlineLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
 
 function ManagerSales() {
   const navigate = useNavigate();
@@ -330,20 +331,20 @@ function ManagerSales() {
               />
             </div>
             <div className="filter-box">
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="status-filter">
+              <StyledSelect value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="status-filter">
                 <option value="All">{t.allStatus}</option>
                 <option value="Pending">{t.pending}</option>
                 <option value="Approved">{t.approved}</option>
                 <option value="Rejected">{t.rejected}</option>
-              </select>
+              </StyledSelect>
             </div>
             <div className="filter-box">
-              <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="status-filter">
+              <StyledSelect value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="status-filter">
                 <option value="all">{t.allTime}</option>
                 <option value="today">{t.today}</option>
                 <option value="week">{t.last7Days}</option>
                 <option value="month">{t.last30Days}</option>
-              </select>
+              </StyledSelect>
             </div>
           </div>
 

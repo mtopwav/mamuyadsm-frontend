@@ -38,6 +38,7 @@ import {
 import { getCurrentDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader, InlineLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
 
 const LOW_STOCK_THRESHOLD = 10;
 
@@ -686,7 +687,7 @@ function ManagerSpareparts() {
               />
             </div>
             <div className="filter-box">
-              <select
+              <StyledSelect
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="status-filter"
@@ -695,7 +696,7 @@ function ManagerSpareparts() {
                 {categoryFilterOptions.map((cat) => (
                   <option key={cat} value={cat}>{capitalizeName(cat)}</option>
                 ))}
-              </select>
+              </StyledSelect>
             </div>
             <button
               type="button"
@@ -922,7 +923,7 @@ function ManagerSpareparts() {
                 </div>
                 <div className="manager-form-group">
                   <label>{t.category} <span className="manager-required">*</span></label>
-                  <select
+                  <StyledSelect
                     value={addForm.category_id}
                     onChange={(e) => setAddForm((f) => ({ ...f, category_id: e.target.value }))}
                     required
@@ -934,11 +935,11 @@ function ManagerSpareparts() {
                       .map((cat) => (
                         <option key={cat.id} value={cat.id}>{capitalizeName(cat.name)}</option>
                       ))}
-                  </select>
+                  </StyledSelect>
                 </div>
                 <div className="manager-form-group">
                   <label>Brand <span className="manager-required">*</span></label>
-                  <select
+                  <StyledSelect
                     value={addForm.brand_id}
                     onChange={(e) => setAddForm((f) => ({ ...f, brand_id: e.target.value }))}
                     required
@@ -950,7 +951,7 @@ function ManagerSpareparts() {
                       .map((b) => (
                         <option key={b.id} value={b.id}>{capitalizeName(b.name)}</option>
                       ))}
-                  </select>
+                  </StyledSelect>
                 </div>
                 {editingId != null && (
                   <div className="manager-form-group">

@@ -257,7 +257,8 @@
 
 .bulk-sms-field input,
 .bulk-sms-field select,
-.bulk-sms-field textarea {
+.bulk-sms-field textarea,
+.bulk-sms-field .bulk-sms-datetime {
   width: 100%;
   padding: 10px 12px;
   border: 1px solid #ced4da;
@@ -271,7 +272,8 @@
 
 .bulk-sms-field input:focus,
 .bulk-sms-field select:focus,
-.bulk-sms-field textarea:focus {
+.bulk-sms-field textarea:focus,
+.bulk-sms-field .bulk-sms-datetime:focus {
   outline: none;
   border-color: #511C00;
   box-shadow: 0 0 0 3px rgba(26, 58, 95, 0.12);
@@ -398,6 +400,10 @@
   flex-wrap: wrap;
   gap: 16px;
   align-items: flex-end;
+}
+
+.bulk-sms-schedule-row .styled-date {
+  min-width: 220px;
 }
 
 .bulk-sms-schedule-option {

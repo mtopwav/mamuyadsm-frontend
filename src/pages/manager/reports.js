@@ -29,6 +29,7 @@ import { formatDateTime, getCurrentDateTime } from '../../utils/dateTime';
 import { RECEIPT_PRINT_STYLES, buildReceiptBodyHtml } from '../../utils/receiptPrintHtml';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader, InlineLoader } from '../../components/LoadingSpinner';
+import StyledDateInput from '../../components/StyledDateInput';
 
 function ManagerReports() {
   const navigate = useNavigate();
@@ -1181,8 +1182,7 @@ function ManagerReports() {
             <FaFilter className="manager-reports-date-filter-icon" aria-hidden />
             <label className="manager-reports-date-label">
               <span>{t.fromDate || 'From'}</span>
-              <input
-                type="date"
+              <StyledDateInput
                 className="manager-reports-date-input"
                 value={dateFrom}
                 max={dateTo || undefined}
@@ -1191,8 +1191,7 @@ function ManagerReports() {
             </label>
             <label className="manager-reports-date-label">
               <span>{t.toDate || 'To'}</span>
-              <input
-                type="date"
+              <StyledDateInput
                 className="manager-reports-date-input"
                 value={dateTo}
                 min={dateFrom || undefined}

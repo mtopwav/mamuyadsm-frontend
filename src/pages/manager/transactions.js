@@ -34,6 +34,8 @@ import { getPayments, updatePaymentStatus, getSpareParts, apiRequest, deletePaym
 import { getCurrentDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
+import StyledDateInput from '../../components/StyledDateInput';
 
 function ManagerTransactions() {
   const navigate = useNavigate();
@@ -1280,18 +1282,14 @@ function ManagerTransactions() {
       title: 'Approve Transaction',
       html: `
         <div style="text-align:left;">
-          <label for="manager-payment-type" style="display:block;margin-bottom:6px;font-weight:600;color:#511C00;">
+          <label style="display:block;margin-bottom:6px;font-weight:600;color:#511C00;">
             Payment type
           </label>
-          <select
-            id="manager-payment-type"
-            class="swal2-select"
-            style="box-sizing:border-box;width:100%;margin:0;padding:8px 10px;border-radius:6px;border:1px solid #cbd5e1;background:#f8fafc;color:#0f172a;"
-          >
-            <option value="">-- Select payment type --</option>
-            <option value="Sales">Sales</option>
-            <option value="Loan">Loan</option>
-          </select>
+          <input type="hidden" id="manager-payment-type" value="" />
+          <div id="manager-payment-type-options" style="display:flex;flex-direction:column;gap:6px;">
+            <button type="button" data-value="Sales" class="manager-swal-option" style="text-align:left;padding:10px 12px;border-radius:8px;border:1px solid #eadfd6;background:#fff;color:#3a2418;cursor:pointer;font:inherit;">Sales</button>
+            <button type="button" data-value="Loan" class="manager-swal-option" style="text-align:left;padding:10px 12px;border-radius:8px;border:1px solid #eadfd6;background:#fff;color:#3a2418;cursor:pointer;font:inherit;">Loan</button>
+          </div>
         </div>
       `,
       showCancelButton: true,
@@ -1299,6 +1297,22 @@ function ManagerTransactions() {
       cancelButtonColor: '#6c757d',
       confirmButtonText: `Yes, ${actionText}`,
       focusConfirm: false,
+      didOpen: () => {
+        const input = document.getElementById('manager-payment-type');
+        const buttons = document.querySelectorAll('.manager-swal-option');
+        buttons.forEach((button) => {
+          button.addEventListener('click', () => {
+            const next = button.getAttribute('data-value') || '';
+            if (input) input.value = next;
+            buttons.forEach((item) => {
+              const active = item === button;
+              item.style.background = active ? '#511C00' : '#fff';
+              item.style.color = active ? '#fff' : '#3a2418';
+              item.style.borderColor = active ? '#511C00' : '#eadfd6';
+            });
+          });
+        });
+      },
       preConfirm: () => {
         const el = document.getElementById('manager-payment-type');
         const val = el ? el.value : '';
@@ -1524,20 +1538,19 @@ function ManagerTransactions() {
               />
             </div>
             <div className="filter-box">
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="status-filter">
+              <StyledSelect value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="status-filter">
                 <option value="All">{t.allStatus}</option>
                 <option value="Pending">{t.pending}</option>
                 <option value="Approved">{t.approved}</option>
                 <option value="Rejected">{t.rejected}</option>
-              </select>
+              </StyledSelect>
             </div>
             <div className="manager-transactions-date-filters">
               <label className="manager-date-filter-label">
                 <FaCalendarAlt aria-hidden />
                 <span>{t.fromDate || 'From'}</span>
               </label>
-              <input
-                type="date"
+              <StyledDateInput
                 className="manager-date-filter-input"
                 value={dateFrom}
                 max={dateTo || undefined}
@@ -1547,8 +1560,7 @@ function ManagerTransactions() {
               <label className="manager-date-filter-label">
                 <span>{t.toDate || 'To'}</span>
               </label>
-              <input
-                type="date"
+              <StyledDateInput
                 className="manager-date-filter-input"
                 value={dateTo}
                 min={dateFrom || undefined}
@@ -2223,7 +2235,7 @@ function ManagerTransactions() {
 
                   <div className="receive-money-field">
                     <label htmlFor="receive-payment-method">{t.paymentMethod || 'Payment Method'}</label>
-                    <select
+                    <StyledSelect
                       id="receive-payment-method"
                       value={paymentMethodInput}
                       onChange={(e) => setPaymentMethodInput(e.target.value)}
@@ -2236,7 +2248,7 @@ function ManagerTransactions() {
                       <option value="Airtel Money">Airtel Money</option>
                       <option value="Bank Transfer">Bank Transfer</option>
                       <option value="Credit Card">Credit Card</option>
-                    </select>
+                    </StyledSelect>
                   </div>
 
                   <div className="receive-money-field">

@@ -31,6 +31,8 @@ import LanguageSelector from '../../components/LanguageSelector';
 import { getCurrentDateTime, formatDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader, InlineLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
+import StyledDateInput from '../../components/StyledDateInput';
 import { getExpenses, createExpense, updateExpense } from '../../services/api';
 
 const EXPENSE_CATEGORIES = [
@@ -455,8 +457,7 @@ function ManagerExpenses() {
           <div className="form-row">
             <div className="form-group">
               <label>{t.date || 'Date'} *</label>
-              <input
-                type="date"
+              <StyledDateInput
                 className="manager-form-input"
                 value={form.date}
                 onChange={(e) => setForm((f) => ({ ...f, date: e.target.value }))}
@@ -465,14 +466,14 @@ function ManagerExpenses() {
             </div>
             <div className="form-group">
               <label>{t.status || 'Status'}</label>
-              <select
+              <StyledSelect
                 className="manager-form-input"
                 value={form.status}
                 onChange={(e) => setForm((f) => ({ ...f, status: e.target.value }))}
               >
                 <option value="Pending">{t.pending || 'Pending'}</option>
                 <option value="Paid">{t.paid || 'Paid'}</option>
-              </select>
+              </StyledSelect>
             </div>
           </div>
           <div className="form-group">
@@ -489,7 +490,7 @@ function ManagerExpenses() {
           <div className="form-row">
             <div className="form-group">
               <label>{t.category || 'Category'} *</label>
-              <select
+              <StyledSelect
                 className="manager-form-input"
                 value={form.category}
                 onChange={(e) => setForm((f) => ({ ...f, category: e.target.value }))}
@@ -499,7 +500,7 @@ function ManagerExpenses() {
                 {categoryOptions.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
-              </select>
+              </StyledSelect>
             </div>
             <div className="form-group">
               <label>{t.amount || 'Amount'} (TZS) *</label>
@@ -629,7 +630,7 @@ function ManagerExpenses() {
               />
             </div>
             <div className="filter-box">
-              <select
+              <StyledSelect
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="status-filter"
@@ -637,10 +638,10 @@ function ManagerExpenses() {
                 <option value="All">{t.allStatus || 'All Status'}</option>
                 <option value="Pending">{t.pending || 'Pending'}</option>
                 <option value="Paid">{t.paid || 'Paid'}</option>
-              </select>
+              </StyledSelect>
             </div>
             <div className="filter-box">
-              <select
+              <StyledSelect
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
                 className="status-filter"
@@ -649,10 +650,10 @@ function ManagerExpenses() {
                 {categoryOptions.map((cat) => (
                   <option key={cat} value={cat}>{cat}</option>
                 ))}
-              </select>
+              </StyledSelect>
             </div>
             <div className="filter-box manager-time-filter-group">
-              <select
+              <StyledSelect
                 value={timeFilter}
                 onChange={(e) => setTimeFilter(e.target.value)}
                 className="status-filter"
@@ -662,13 +663,12 @@ function ManagerExpenses() {
                 <option value="week">{t.last7Days || 'Last 7 days'}</option>
                 <option value="month">{t.last30Days || 'Last 30 days'}</option>
                 <option value="custom">{t.customRange || 'Custom range'}</option>
-              </select>
+              </StyledSelect>
               {timeFilter === 'custom' && (
                 <div className="manager-date-range-inputs" aria-label="Date range">
                   <label className="manager-date-range-label">
                     <span>{t.fromDate || 'From'}</span>
-                    <input
-                      type="date"
+                    <StyledDateInput
                       value={customDateFrom}
                       onChange={(e) => setCustomDateFrom(e.target.value)}
                       className="manager-date-input"
@@ -676,11 +676,11 @@ function ManagerExpenses() {
                   </label>
                   <label className="manager-date-range-label">
                     <span>{t.toDate || 'To'}</span>
-                    <input
-                      type="date"
+                    <StyledDateInput
                       value={customDateTo}
                       onChange={(e) => setCustomDateTo(e.target.value)}
                       className="manager-date-input"
+                      min={customDateFrom || undefined}
                     />
                   </label>
                 </div>

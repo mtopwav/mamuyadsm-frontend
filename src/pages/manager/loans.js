@@ -35,6 +35,8 @@ import { getPayments, updatePaymentDetails, createLoanFromPayment, deletePayment
 import { getCurrentDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
+import StyledDateInput from '../../components/StyledDateInput';
 
 function ManagerLoans() {
   const navigate = useNavigate();
@@ -1488,27 +1490,26 @@ function ManagerLoans() {
               />
             </div>
             <div className="filter-box">
-              <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="status-filter">
+              <StyledSelect value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)} className="status-filter">
                 <option value="All">All Status</option>
                 <option value="Pending">Pending</option>
                 <option value="Approved">Approved</option>
                 <option value="Rejected">Rejected</option>
-              </select>
+              </StyledSelect>
             </div>
             <div className="filter-box manager-time-filter-group">
-              <select value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="status-filter">
+              <StyledSelect value={timeFilter} onChange={(e) => setTimeFilter(e.target.value)} className="status-filter">
                 <option value="all">{t.allTime}</option>
                 <option value="today">{t.today}</option>
                 <option value="week">{t.last7Days}</option>
                 <option value="month">{t.last30Days}</option>
                 <option value="custom">{t.customRange}</option>
-              </select>
+              </StyledSelect>
               {timeFilter === 'custom' && (
                 <div className="manager-date-range-inputs" aria-label="Date range">
                   <label className="manager-date-range-label">
                     <span>{t.fromDate}</span>
-                    <input
-                      type="date"
+                    <StyledDateInput
                       value={customDateFrom}
                       onChange={(e) => setCustomDateFrom(e.target.value)}
                       className="manager-date-input"
@@ -1516,11 +1517,11 @@ function ManagerLoans() {
                   </label>
                   <label className="manager-date-range-label">
                     <span>{t.toDate}</span>
-                    <input
-                      type="date"
+                    <StyledDateInput
                       value={customDateTo}
                       onChange={(e) => setCustomDateTo(e.target.value)}
                       className="manager-date-input"
+                      min={customDateFrom || undefined}
                     />
                   </label>
                 </div>
@@ -1731,7 +1732,7 @@ function ManagerLoans() {
                 <div className="view-item">
                   <label>{t.paymentId || 'Payment ID'}</label>
                   <div className="view-value">
-                    <select
+                    <StyledSelect
                       value={addLoanPaymentId}
                       onChange={(e) => setAddLoanPaymentId(e.target.value)}
                       className="loan-edit-input"
@@ -1743,7 +1744,7 @@ function ManagerLoans() {
                           #{p.id} - {capitalizeName(p.customer_name || '')} - Remain: TZS {formatPrice(getAmountRemain(p))}
                         </option>
                       ))}
-                    </select>
+                    </StyledSelect>
                   </div>
                 </div>
 
@@ -1938,7 +1939,7 @@ function ManagerLoans() {
                 <div className="view-item">
                   <label>{t.status || 'Status'}</label>
                   <div className="view-value">
-                    <select
+                    <StyledSelect
                       value={addLoanStatus}
                       onChange={(e) => setAddLoanStatus(e.target.value)}
                       className="loan-edit-input"
@@ -1947,7 +1948,7 @@ function ManagerLoans() {
                       <option value="Pending">Pending</option>
                       <option value="Approved">Approved</option>
                       <option value="Rejected">Rejected</option>
-                    </select>
+                    </StyledSelect>
                   </div>
                 </div>
               </div>
@@ -2200,7 +2201,7 @@ function ManagerLoans() {
                     <h3 className="loan-edit-panel-title"><FaMoneyBillWave /> Record installment</h3>
                     <div className="loan-edit-field">
                       <label htmlFor="loan-payment-method"><FaCreditCard /> {t.paymentMethod || 'Payment Method'}</label>
-                      <select
+                      <StyledSelect
                         id="loan-payment-method"
                         value={paymentMethodInput}
                         onChange={(e) => setPaymentMethodInput(e.target.value)}
@@ -2213,7 +2214,7 @@ function ManagerLoans() {
                         <option value="Airtel Money">Airtel Money</option>
                         <option value="Bank Transfer">Bank Transfer</option>
                         <option value="Credit Card">Credit Card</option>
-                      </select>
+                      </StyledSelect>
                     </div>
                     <div className="loan-edit-field">
                       <label htmlFor="loan-amount-add">{t.amountReceived || 'Amount Received'} ({t.add || 'Add'})</label>

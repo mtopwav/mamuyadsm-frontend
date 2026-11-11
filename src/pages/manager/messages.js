@@ -34,6 +34,8 @@ import { getCurrentDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
 import { getSmsBalance, getSmsRecipients, sendBulkSms } from '../../services/api';
 import { PageLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
+import StyledDateInput from '../../components/StyledDateInput';
 
 /** Apply /api/sms/balance (Onfon GET Balance) to the units card. */
 function applyUnitsBalanceFromApi(balanceRes, { setSmsUnits, setSmsCredits, setSmsApiReady }) {
@@ -658,7 +660,7 @@ function ManagerMessages() {
                     </div>
                     <div className="bulk-sms-field">
                       <label htmlFor="sms-template">Template</label>
-                      <select
+                      <StyledSelect
                         id="sms-template"
                         value={templateId}
                         onChange={(e) => handleTemplateChange(e.target.value)}
@@ -668,7 +670,7 @@ function ManagerMessages() {
                             {tpl.label}
                           </option>
                         ))}
-                      </select>
+                      </StyledSelect>
                     </div>
                     <div className="bulk-sms-field">
                       <label htmlFor="sms-body">Message</label>
@@ -710,11 +712,11 @@ function ManagerMessages() {
                           Schedule
                         </label>
                         {sendMode === 'schedule' && (
-                          <input
-                            type="datetime-local"
+                          <StyledDateInput
+                            withTime
                             value={scheduleAt}
                             onChange={(e) => setScheduleAt(e.target.value)}
-                            style={{ maxWidth: '220px' }}
+                            className="bulk-sms-datetime"
                           />
                         )}
                       </div>

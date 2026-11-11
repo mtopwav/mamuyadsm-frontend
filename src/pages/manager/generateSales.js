@@ -28,6 +28,7 @@ import ThemeToggle from '../../components/ThemeToggle';
 import LanguageSelector from '../../components/LanguageSelector';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader, InlineLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
 
 function ManagerGenerateSales() {
   const navigate = useNavigate();
@@ -437,14 +438,14 @@ function ManagerGenerateSales() {
                     <div className="manager-gs-span">
                       <label className="manager-gs-label">
                         Price type
-                        <select
+                        <StyledSelect
                           className="manager-gs-input manager-gs-select"
                           value={priceType}
                           onChange={(e) => setPriceType(e.target.value)}
                         >
                           <option value="retail">Retail price</option>
                           <option value="wholesale">Wholesale price</option>
-                        </select>
+                        </StyledSelect>
                       </label>
                     </div>
                     <div className="manager-gs-col">
