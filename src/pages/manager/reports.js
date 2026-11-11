@@ -16,7 +16,6 @@ import {
   FaUsers,
   FaCalendarAlt,
   FaPrint,
-  FaFilter,
   FaEnvelope,
 } from 'react-icons/fa';
 import './manager-layout.css';
@@ -24,12 +23,11 @@ import './reports.css';
 import logo from '../../images/logo.png';
 import ThemeToggle from '../../components/ThemeToggle';
 import LanguageSelector from '../../components/LanguageSelector';
-import { getPayments } from '../../services/api';
+import { getPayments, getExpenses } from '../../services/api';
 import { formatDateTime, getCurrentDateTime } from '../../utils/dateTime';
 import { RECEIPT_PRINT_STYLES, buildReceiptBodyHtml } from '../../utils/receiptPrintHtml';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader, InlineLoader } from '../../components/LoadingSpinner';
-import StyledDateInput from '../../components/StyledDateInput';
 
 function ManagerReports() {
   const navigate = useNavigate();
@@ -42,8 +40,12 @@ function ManagerReports() {
   const [payments, setPayments] = useState([]);
   const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTime());
   const [activeReport, setActiveReport] = useState('sales'); // 'sales' | 'transactions' | 'loans'
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
+  const todayDate = (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })();
+  const dateFrom = todayDate;
+  const dateTo = todayDate;
   const [logoDataUrl, setLogoDataUrl] = useState(null);
 
   useEffect(() => {
@@ -279,14 +281,7 @@ function ManagerReports() {
 
   const paymentsInRange = payments.filter((p) => isPaymentInDateRange(p));
 
-  const periodLabel =
-    dateFrom && dateTo
-      ? `${dateFrom} → ${dateTo}`
-      : dateFrom
-      ? `${t.fromDate || 'From'} ${dateFrom}`
-      : dateTo
-      ? `${t.toDate || 'Until'} ${dateTo}`
-      : t.allTime || 'All time';
+  const periodLabel = `${t.today || 'Today'} (${dateFrom})`;
 
   const now = new Date();
   const todayStart = new Date(now);
@@ -306,7 +301,6 @@ function ManagerReports() {
   const approvedTotalAmount = approvedPayments.reduce((sum, p) => sum + (parseFloat(p.total_amount) || 0), 0);
   const todaySales = paymentsInRange.filter((p) => isCreatedToday(p));
   const todaySalesAmount = todaySales.reduce((sum, p) => sum + (parseFloat(p.total_amount) || 0), 0);
-  const hasDateFilter = Boolean(dateFrom || dateTo);
 
   // Transaction report: all payments (transactions)
   const pendingCount = paymentsInRange.filter((p) => p.status === 'Pending').length;
@@ -446,7 +440,7 @@ function ManagerReports() {
   };
 
   /** Same table + footer as finance/cashier/reports.js when “all payment methods” is selected. */
-  const handlePrintCashierTransactionsDocument = () => {
+  const handlePrintCashierTransactionsDocument = async () => {
     const logoPath = typeof logo === 'string' ? logo : logo?.default ? logo.default : '';
     const logoUrl = logoPath
       ? logoPath.startsWith('http')
@@ -557,6 +551,66 @@ function ManagerReports() {
             })
             .join('') +
           '</tbody>';
+
+    let expenses = [];
+    let expensesLoadError = "";
+    try {
+      const expensesResponse = await getExpenses(
+        dateFrom || dateTo ? { from: dateFrom, to: dateTo } : {}
+      );
+      const rows = Array.isArray(expensesResponse?.expenses)
+        ? expensesResponse.expenses
+        : Array.isArray(expensesResponse)
+          ? expensesResponse
+          : [];
+      if (expensesResponse?.success === false) {
+        expensesLoadError = expensesResponse.message || "Failed to load expenses";
+      } else {
+        expenses = rows;
+      }
+    } catch (error) {
+      expensesLoadError = error?.message || "Failed to load expenses";
+    }
+
+    const expenseDateOnly = (expense) => {
+      const raw = expense?.date || expense?.expense_date || expense?.created_at;
+      if (!raw) return "";
+      const text = String(raw);
+      if (/^\d{4}-\d{2}-\d{2}$/.test(text)) return text;
+      const parsed = new Date(text);
+      if (Number.isNaN(parsed.getTime())) return text.slice(0, 10);
+      return `${parsed.getFullYear()}-${String(parsed.getMonth() + 1).padStart(2, "0")}-${String(parsed.getDate()).padStart(2, "0")}`;
+    };
+
+    const expensesInRange = expenses.filter((expense) => {
+      const dateOnly = expenseDateOnly(expense);
+      if (!dateOnly) return !dateFrom && !dateTo;
+      if (dateFrom && dateOnly < dateFrom) return false;
+      if (dateTo && dateOnly > dateTo) return false;
+      return true;
+    });
+    const expensesTotal = expensesInRange.reduce((sum, expense) => sum + (Number(expense.amount) || 0), 0);
+    const expensesRowsHtml = expensesLoadError
+      ? `<tbody><tr><td colspan="6" style="text-align:center;padding:12px;">${String(expensesLoadError).replace(/</g, "&lt;")}</td></tr></tbody>`
+      : expensesInRange.length === 0
+        ? '<tbody><tr><td colspan="6" style="text-align:center;padding:12px;">No expenses found</td></tr></tbody>'
+        : '<tbody>' +
+          expensesInRange
+            .map((expense, idx) => {
+              const dateLabel = expenseDateOnly(expense);
+              return `
+                <tr>
+                  <td class="tc">${idx + 1}</td>
+                  <td class="tl">${dateLabel}</td>
+                  <td class="tl">${String(expense.description || "—").replace(/</g, "&lt;")}</td>
+                  <td class="tl">${String(expense.category || "—").replace(/</g, "&lt;")}</td>
+                  <td class="tr">${formatCurrency(expense.amount)}</td>
+                  <td class="tl">${String(expense.status || "—").replace(/</g, "&lt;")}</td>
+                </tr>
+              `;
+            })
+            .join("") +
+          "</tbody>";
 
     const html = `
       <!DOCTYPE html>
@@ -680,6 +734,21 @@ function ManagerReports() {
             ${rowsHtml}
           </table>
 
+          <h2 class="tax-inv-subtitle" style="margin:8px 0 12px;font-size:1.05rem;font-weight:700;letter-spacing:0.04em;">EXPENSES</h2>
+          <table class="tax-inv-table">
+            <thead>
+              <tr>
+                <th class="tc">S.No</th>
+                <th class="tl">Date</th>
+                <th class="tl">Description</th>
+                <th class="tl">Category</th>
+                <th class="tr">Amount (TZS)</th>
+                <th class="tl">Status</th>
+              </tr>
+            </thead>
+            ${expensesRowsHtml}
+          </table>
+
           <div class="tax-inv-footer">
             ${singleDaySummaryNote}
             <div class="tax-inv-footer-row"><label>Direct Sales by Cash (TZS):</label> ${formatCurrency(printSummary.cashTotal)}</div>
@@ -696,6 +765,7 @@ function ManagerReports() {
             <div class="tax-inv-footer-row"><label>Loan paid by Credit (TZS):</label> ${formatCurrency(printSummary.loanPaidCreditTotal)}</div>
             <div class="tax-inv-footer-row"><label>Total Loan paid (TZS):</label> ${formatCurrency(printSummary.loanPaidTotal)}</div>
             <div class="tax-inv-footer-row"><label>Total amount received (TZS):</label> ${formatCurrency(printSummary.totalAmount)}</div>
+            <div class="tax-inv-footer-row"><label>Total expenses (TZS):</label> ${formatCurrency(expensesTotal)}</div>
           </div>
 
           <p class="tax-inv-disclaimer">*This is a computer generated transactions report, hence no signature is required.*</p>
@@ -1118,7 +1188,7 @@ function ManagerReports() {
       </aside>
 
       <div className="main-content">
-        <header className="manager-reports-header">
+        <header className="payments-header">
           <div className="header-left">
             <button className="menu-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
               <FaBars />
@@ -1143,8 +1213,8 @@ function ManagerReports() {
         </header>
 
         <div className="payments-content">
-          <div className="manager-reports-tabs" style={{ alignItems: 'center' }}>
-            <div>
+          <div className="manager-reports-tabs">
+            <div className="manager-reports-tab-group">
               <button
                 className={`manager-report-tab ${activeReport === 'sales' ? 'active' : ''}`}
                 onClick={() => setActiveReport('sales')}
@@ -1170,46 +1240,15 @@ function ManagerReports() {
             <button
               type="button"
               onClick={handlePrint}
-              className="action-btn print"
-              style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: '6px' }}
+              className="action-btn print manager-reports-print"
             >
               <FaPrint />
               <span>Print Report</span>
             </button>
           </div>
 
-          <div className="manager-reports-date-toolbar" aria-label="Date range">
-            <FaFilter className="manager-reports-date-filter-icon" aria-hidden />
-            <label className="manager-reports-date-label">
-              <span>{t.fromDate || 'From'}</span>
-              <StyledDateInput
-                className="manager-reports-date-input"
-                value={dateFrom}
-                max={dateTo || undefined}
-                onChange={(e) => setDateFrom(e.target.value)}
-              />
-            </label>
-            <label className="manager-reports-date-label">
-              <span>{t.toDate || 'To'}</span>
-              <StyledDateInput
-                className="manager-reports-date-input"
-                value={dateTo}
-                min={dateFrom || undefined}
-                onChange={(e) => setDateTo(e.target.value)}
-              />
-            </label>
-            {(dateFrom || dateTo) && (
-              <button
-                type="button"
-                className="manager-reports-date-clear"
-                onClick={() => {
-                  setDateFrom('');
-                  setDateTo('');
-                }}
-              >
-                {t.clearDates || 'Clear dates'}
-              </button>
-            )}
+          <div className="manager-reports-date-toolbar" aria-label={t.today || 'Today'}>
+            <FaCalendarAlt className="manager-reports-date-filter-icon" aria-hidden />
             <span className="manager-reports-period-hint">
               {t.showing || 'Showing'}: {periodLabel}
             </span>
@@ -1246,7 +1285,6 @@ function ManagerReports() {
                       <div className="manager-report-card-value">{formatPrice(todaySalesAmount)}</div>
                       <div className="manager-report-card-sublabel">
                         {todaySales.length} {t.transactionsTodaySublabel}
-                        {hasDateFilter ? ` · ${periodLabel}` : ''}
                       </div>
                     </div>
                   </div>
@@ -1255,25 +1293,14 @@ function ManagerReports() {
 
               {activeReport === 'transactions' && (
                 <section className="manager-report-section">
-                  <div
-                    className="manager-report-section-heading-row"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      flexWrap: 'wrap',
-                      gap: '12px',
-                      marginBottom: '12px'
-                    }}
-                  >
-                    <h3 className="manager-report-section-title" style={{ margin: 0 }}>
+                  <div className="manager-report-section-heading-row">
+                    <h3 className="manager-report-section-title">
                       <FaFileInvoice /> {t.transactionReports}
                     </h3>
                     <button
                       type="button"
                       onClick={handlePrintCashierTransactionsDocument}
-                      className="action-btn print"
-                      style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+                      className="action-btn print manager-reports-print"
                       title={t.printTransactionDocument || 'Print transaction document'}
                     >
                       <FaPrint />

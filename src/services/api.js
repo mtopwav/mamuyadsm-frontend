@@ -425,8 +425,13 @@ export const returnPayment = (id, { return_amount }) => {
 /**
  * Get all expenses
  */
-export const getExpenses = () => {
-  return apiRequest("/expenses");
+export const getExpenses = (queryParams = {}) => {
+  const q = new URLSearchParams();
+  Object.entries(queryParams).forEach(([k, v]) => {
+    if (v != null && v !== "") q.append(k, String(v));
+  });
+  const qs = q.toString();
+  return apiRequest(`/expenses${qs ? `?${qs}` : ""}`);
 };
 
 /**

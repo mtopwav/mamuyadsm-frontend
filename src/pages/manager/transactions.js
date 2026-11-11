@@ -1329,41 +1329,6 @@ function ManagerTransactions() {
     await performStatusChange(payment, newStatus, { status: 'none', amount: 0 }, selectedPaymentType);
   };
 
-  const handleDeleteApproved = async (payment) => {
-    const result = await Swal.fire({
-      icon: 'warning',
-      title: 'Delete Transaction',
-      text: 'Are you sure you want to delete this approved transaction?',
-      showCancelButton: true,
-      confirmButtonColor: '#dc3545',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete',
-      cancelButtonText: 'Cancel'
-    });
-    if (!result.isConfirmed) return;
-
-    try {
-      const res = await deletePayment(payment.id);
-      if (!res.success) {
-        throw new Error(res.message || 'Failed to delete transaction');
-      }
-      setPayments((prev) => prev.filter((p) => p.id !== payment.id));
-      Swal.fire({
-        icon: 'success',
-        title: 'Deleted',
-        text: 'Approved transaction deleted successfully.',
-        confirmButtonColor: '#511C00'
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message || 'Failed to delete transaction.',
-        confirmButtonColor: '#511C00'
-      });
-    }
-  };
-
   const isLoanPayment = (payment) =>
     String(payment?.payment_type ?? '').trim().toLowerCase() === 'loan';
 
@@ -1687,16 +1652,6 @@ function ManagerTransactions() {
                               >
                                 <FaPrint className="action-icon" />
                                 <span className="action-text">Print Receipt</span>
-                              </button>
-                            )}
-                            {payment.status === 'Approved' && (
-                              <button
-                                className="action-btn reject"
-                                title="Delete transaction"
-                                onClick={() => handleDeleteApproved(payment)}
-                              >
-                                <FaTimesCircle className="action-icon" />
-                                <span className="action-text">Delete</span>
                               </button>
                             )}
                             <button
