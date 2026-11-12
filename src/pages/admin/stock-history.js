@@ -14,6 +14,7 @@ import {
   FaUser,
   FaTags,
   FaCalendarAlt,
+  FaWallet,
   FaBell,
   FaSearch
 } from 'react-icons/fa';
@@ -28,6 +29,7 @@ import LanguageSelector from '../../components/LanguageSelector';
 import { getUnviewedOperationsCount } from '../../utils/notifications';
 import { getSpareParts, getStockHistory } from '../../services/api';
 import { PageLoader } from '../../components/LoadingSpinner';
+import StyledDateInput from '../../components/StyledDateInput';
 
 function StockHistory() {
   const navigate = useNavigate();
@@ -41,7 +43,7 @@ function StockHistory() {
   const [currentQuantities, setCurrentQuantities] = useState({});
   const [historyLoading, setHistoryLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [actionFilter, setActionFilter] = useState('all');
+  const [filterDate, setFilterDate] = useState('');
 
   useEffect(() => {
     const userData = localStorage.getItem('user') || sessionStorage.getItem('user');
@@ -138,10 +140,31 @@ function StockHistory() {
     };
   }, [user]);
 
+  const historyDay = (value) => {
+    if (!value) return '';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return String(value).slice(0, 10);
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${date.getFullYear()}-${month}-${day}`;
+  };
+
+  const changeDates = useMemo(() => {
+    const days = new Set();
+    history.forEach((row) => {
+      const day = historyDay(row.created_at);
+      if (day) days.add(day);
+    });
+    return Array.from(days);
+  }, [history]);
+
   const visibleHistory = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     return history.filter((row) => {
-      if (actionFilter !== 'all' && row.action !== actionFilter) return false;
+      if (filterDate) {
+        const day = historyDay(row.created_at);
+        if (day !== filterDate) return false;
+      }
       if (!query) return true;
       const haystack = [
         row.part_name,
@@ -154,13 +177,18 @@ function StockHistory() {
       ].join(' ').toLowerCase();
       return haystack.includes(query);
     });
-  }, [history, actionFilter, searchTerm]);
+  }, [history, filterDate, searchTerm]);
+
+  const quantityBeforeValue = (row) => {
+    const value = row.recorded_quantity_before != null ? row.recorded_quantity_before : row.quantity_before;
+    if (value == null || value === '') return 0;
+    const number = Number(value);
+    return Number.isNaN(number) ? 0 : number;
+  };
 
   const quantityChange = (row) => {
-    if (row.quantity_before == null || row.quantity_after == null) {
-      return row.action === 'added' ? Number(row.quantity_after) || 0 : null;
-    }
-    return (Number(row.quantity_after) || 0) - (Number(row.quantity_before) || 0);
+    if (row.quantity_after == null || row.quantity_after === '') return null;
+    return (Number(row.quantity_after) || 0) - quantityBeforeValue(row);
   };
 
   const handleLogout = async () => {
@@ -226,6 +254,13 @@ function StockHistory() {
           <Link to="/admin/transactions" className="nav-item">
             <FaCalendarAlt className="nav-icon" />
             <span>Transactions</span>
+          </Link>
+          <Link
+            to="/admin/expenses"
+            className={'nav-item' + (window.location.pathname === '/admin/expenses' ? ' active' : '')}
+          >
+            <FaWallet className="nav-icon" />
+            <span>{t.expenses || 'Expenses'}</span>
           </Link>
           <Link to="/admin/reports" className="nav-item">
             <FaChartBar className="nav-icon" />
@@ -335,18 +370,15 @@ function StockHistory() {
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="history-filters">
-              {['all', 'added', 'updated'].map((filter) => (
-                <button
-                  key={filter}
-                  type="button"
-                  className={`history-filter ${actionFilter === filter ? 'active' : ''}`}
-                  onClick={() => setActionFilter(filter)}
-                >
-                  {filter === 'all' ? t.stockAll : filter === 'added' ? t.stockAdded : t.stockUpdated}
-                </button>
-              ))}
-            </div>
+            <label className="history-date-field">
+              <span>Date</span>
+              <StyledDateInput
+                value={filterDate}
+                markedDates={historyLoading ? undefined : changeDates}
+                title="Dates with stock changes"
+                onChange={(e) => setFilterDate(e.target.value)}
+              />
+            </label>
           </div>
 
           {(historyLoading || visibleHistory.length === 0) && (
@@ -397,7 +429,7 @@ function StockHistory() {
                         <td>{row.part_number}</td>
                         <td>{row.category_name || '—'}</td>
                         <td>{row.brand_name || '—'}</td>
-                        <td>{row.quantity_before == null ? '—' : row.quantity_before}</td>
+                        <td>{quantityBeforeValue(row)}</td>
                         <td>{row.quantity_after == null ? '—' : row.quantity_after}</td>
                         <td className={`qty-change ${changeClass}`}>{changeLabel}</td>
                         <td>{currentQuantity == null || currentQuantity === '' ? '—' : currentQuantity}</td>

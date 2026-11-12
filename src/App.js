@@ -18,6 +18,7 @@ const Employees = lazy(() => import('./pages/admin/employees'));
 const Finances = lazy(() => import('./pages/admin/finances'));
 const AdminReports = lazy(() => import('./pages/admin/reports'));
 const AdminTransactions = lazy(() => import('./pages/admin/transactions'));
+const AdminExpenses = lazy(() => import('./pages/admin/expenses'));
 const Messages = lazy(() => import('./pages/admin/messages'));
 const Settings = lazy(() => import('./pages/admin/setting'));
 const CategoriesBrands = lazy(() => import('./pages/admin/categories&brands'));
@@ -96,6 +97,7 @@ function App() {
           <Route path="/admin/finances" element={<Finances />} />
           <Route path="/admin/reports" element={<AdminReports />} />
           <Route path="/admin/transactions" element={<AdminTransactions />} />
+          <Route path="/admin/expenses" element={<AdminExpenses />} />
           <Route path="/admin/messages" element={<Messages />} />
           <Route path="/admin/categories-brands" element={<CategoriesBrands />} />
           <Route path="/admin/settings" element={<Settings />} />

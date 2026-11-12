@@ -85,7 +85,8 @@ export default function StyledDateInput({
   min,
   max,
   title,
-  withTime = false
+  withTime = false,
+  markedDates
 }) {
   const selected = parseDate(value);
   const today = new Date();
@@ -102,6 +103,10 @@ export default function StyledDateInput({
 
   const minDate = min ? String(min).slice(0, 10) : '';
   const maxDate = max ? String(max).slice(0, 10) : '';
+  const markedSet = useMemo(() => {
+    if (!Array.isArray(markedDates)) return null;
+    return new Set(markedDates.map((date) => String(date).slice(0, 10)).filter(Boolean));
+  }, [markedDates]);
 
   const emit = (next) => {
     if (onChange) {
@@ -116,6 +121,7 @@ export default function StyledDateInput({
     const iso = toISODate(date);
     if (minDate && iso < minDate) return true;
     if (maxDate && iso > maxDate) return true;
+    if (markedSet && !markedSet.has(iso)) return true;
     return false;
   };
 
@@ -175,7 +181,12 @@ export default function StyledDateInput({
 
   const openCalendar = () => {
     if (disabled) return;
-    const base = selected || today;
+    let base = selected || today;
+    if (!selected && markedSet && markedSet.size) {
+      const latest = Array.from(markedSet).sort().pop();
+      const parsed = parseDate(latest);
+      if (parsed) base = parsed;
+    }
     setView({ year: base.getFullYear(), month: base.getMonth() });
     setTime(parseTime(value));
     setOpen((prev) => !prev);
@@ -252,24 +263,28 @@ export default function StyledDateInput({
               </div>
               <div className="styled-date-grid">
                 {cells.map((cell) => {
+                  const iso = toISODate(cell.date);
                   const blocked = isBlocked(cell.date);
                   const active = sameDay(cell.date, selected);
                   const isToday = sameDay(cell.date, today);
+                  const marked = Boolean(markedSet && markedSet.has(iso));
                   const className = [
                     'styled-date-day',
                     cell.outside ? 'outside' : '',
                     active ? 'selected' : '',
-                    isToday ? 'today' : ''
+                    isToday ? 'today' : '',
+                    marked ? 'has-change' : ''
                   ].filter(Boolean).join(' ');
                   return (
                     <button
-                      key={toISODate(cell.date)}
+                      key={iso}
                       type="button"
                       className={className}
                       disabled={blocked}
                       onClick={() => chooseDay(cell.date)}
                     >
                       {cell.date.getDate()}
+                      {marked ? <span className="styled-date-mark" /> : null}
                     </button>
                   );
                 })}
@@ -329,6 +344,7 @@ export default function StyledDateInput({
                 <button
                   type="button"
                   className="styled-date-link"
+                  disabled={isBlocked(today)}
                   onClick={() => {
                     if (!isBlocked(today)) chooseDay(today);
                   }}

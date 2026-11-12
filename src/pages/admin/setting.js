@@ -23,7 +23,8 @@ import {
   FaGlobe,
   FaClock,
   FaTags,
-  FaCalendarAlt
+  FaCalendarAlt,
+  FaWallet
 } from 'react-icons/fa';
 import './setting.css';
 import logo from '../../images/logo.png';
@@ -369,6 +370,13 @@ function Settings() {
           >
             <FaCalendarAlt className="nav-icon" />
             <span>Transactions</span>
+          </Link>
+          <Link
+            to="/admin/expenses"
+            className={'nav-item' + (window.location.pathname === '/admin/expenses' ? ' active' : '')}
+          >
+            <FaWallet className="nav-icon" />
+            <span>{t.expenses || 'Expenses'}</span>
           </Link>
           <Link to="/admin/reports" className="nav-item">
             <FaChartBar className="nav-icon" />

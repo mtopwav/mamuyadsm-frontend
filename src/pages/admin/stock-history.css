@@ -14,26 +14,39 @@
   font-size: 0.95rem;
 }
 
-.history-filters {
+.history-date-field {
   display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
 }
 
-.history-filter {
+.history-date-field span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #511C00;
+}
+
+.history-date-field .styled-date,
+.history-date-field .styled-date-trigger {
+  width: 100%;
+}
+
+.history-date-field .styled-date-trigger {
+  padding: 12px 14px;
   border: 1px solid var(--border-color, #ddd);
-  background: var(--bg-secondary, white);
-  color: var(--text-primary, #333);
   border-radius: 8px;
-  padding: 12px 18px;
-  font-weight: 600;
-  cursor: pointer;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+  box-sizing: border-box;
 }
 
-.history-filter.active {
-  background: linear-gradient(135deg, #511C00, #3a1400);
-  color: white;
-  border-color: transparent;
+.history-date-field .styled-date-trigger:focus {
+  outline: none;
+  border-color: #511C00;
+  box-shadow: 0 0 0 3px rgba(81, 28, 0, 0.12);
 }
 
 .action-pill {

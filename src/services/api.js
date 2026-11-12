@@ -454,6 +454,12 @@ export const updateExpense = (id, body) => {
   });
 };
 
+export const deleteExpense = (id) => {
+  return apiRequest(`/expenses/${id}`, {
+    method: "DELETE"
+  });
+};
+
 /**
  * Get all revenues
  */

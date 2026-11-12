@@ -1,0 +1,116 @@
+.admin-expenses-hint {
+  margin: 0 0 20px;
+  color: var(--text-secondary, #6c757d);
+  font-size: 0.95rem;
+}
+
+.admin-expenses .action-bar .styled-select {
+  min-width: 170px;
+}
+
+.admin-expenses .styled-select-trigger.status-filter {
+  min-width: 170px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+  box-sizing: border-box;
+}
+
+.admin-expenses .styled-select-trigger.status-filter:focus {
+  outline: none;
+  border-color: #511C00;
+  box-shadow: 0 0 0 3px rgba(81, 28, 0, 0.12);
+}
+
+.admin-expenses-date {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 180px;
+}
+
+.admin-expenses-date span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #511C00;
+}
+
+.admin-expenses-date .styled-date,
+.admin-expenses-date .styled-date-trigger {
+  width: 100%;
+}
+
+.admin-expenses-date .styled-date-trigger {
+  padding: 12px 14px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+  box-sizing: border-box;
+}
+
+.admin-expenses-date .styled-date-trigger:focus {
+  outline: none;
+  border-color: #511C00;
+  box-shadow: 0 0 0 3px rgba(81, 28, 0, 0.12);
+}
+
+.admin-expenses-stats .stat-card {
+  border-top: 4px solid #511C00;
+}
+
+.admin-expenses-stat-pending {
+  border-top-color: #e9a825 !important;
+}
+
+.admin-expenses-stat-paid {
+  border-top-color: #2a9d8f !important;
+}
+
+.admin-expenses-stat-amount .stat-value {
+  font-size: 1.15rem;
+}
+
+.admin-expenses-empty {
+  background: var(--bg-secondary, white);
+  border-radius: 10px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-secondary, #6c757d);
+  font-style: italic;
+  box-shadow: var(--card-shadow, 0 2px 8px rgba(0, 0, 0, 0.08));
+}
+
+.admin-expenses-desc {
+  white-space: normal;
+  min-width: 220px;
+  max-width: 420px;
+  line-height: 1.45;
+}
+
+.admin-expenses-status {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.admin-expenses-status.pending {
+  background: #fff4e5;
+  color: #9a6200;
+}
+
+.admin-expenses-status.paid {
+  background: #e7f6ee;
+  color: #0f7b3a;
+}
+
+.dark-theme .admin-expenses-date span {
+  color: #f4a261;
+}

@@ -133,10 +133,32 @@
   box-shadow: inset 0 0 0 1px #f4a261;
 }
 
+.styled-date-day.has-change {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-weight: 700;
+  color: #511C00;
+  background: #fff1e6;
+}
+
+.styled-date-mark {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #511C00;
+}
+
 .styled-date-day.selected,
 .styled-date-day.selected:hover {
   background: #511C00;
   color: #fff;
+}
+
+.styled-date-day.selected .styled-date-mark {
+  background: #fff;
 }
 
 .styled-date-day:disabled {
@@ -194,6 +216,12 @@
 .styled-date-link:hover,
 .styled-date-done:hover {
   background: #fff1e6;
+}
+
+.styled-date-link:disabled {
+  color: #d5c8bf;
+  cursor: not-allowed;
+  background: transparent;
 }
 
 .styled-date-done {
