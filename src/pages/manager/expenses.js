@@ -443,7 +443,7 @@ function ManagerExpenses() {
   const renderExpenseForm = (onSubmit, title, submitLabel) => (
     <div className="modal-overlay" onClick={() => { setShowAddModal(false); setShowEditModal(false); }}>
       <div className="modal-content expenses-modal" onClick={(e) => e.stopPropagation()}>
-        <div className="modal-header">
+        <div className="modal-header expenses-modal-header">
           <h2>{title}</h2>
           <button
             type="button"
@@ -453,7 +453,7 @@ function ManagerExpenses() {
             ×
           </button>
         </div>
-        <form onSubmit={onSubmit} className="expenses-form">
+        <form onSubmit={onSubmit} className="expenses-form expenses-modal-form">
           <div className="form-row">
             <div className="form-group">
               <label>{t.date || 'Date'} *</label>
@@ -515,7 +515,7 @@ function ManagerExpenses() {
               />
             </div>
           </div>
-          <div className="form-actions">
+          <div className="form-actions expenses-modal-actions">
             <button
               type="button"
               className="cancel-btn"
