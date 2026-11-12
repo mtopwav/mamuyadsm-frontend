@@ -15,9 +15,7 @@ import {
   FaTags,
   FaCalendarAlt,
   FaBell,
-  FaSearch,
-  FaPlus,
-  FaEdit
+  FaSearch
 } from 'react-icons/fa';
 import './dashboard.css';
 import './spareparts.css';
@@ -28,7 +26,7 @@ import { useTranslation } from '../../utils/useTranslation';
 import ThemeToggle from '../../components/ThemeToggle';
 import LanguageSelector from '../../components/LanguageSelector';
 import { getUnviewedOperationsCount } from '../../utils/notifications';
-import { getStockHistory } from '../../services/api';
+import { getSpareParts, getStockHistory } from '../../services/api';
 import { PageLoader } from '../../components/LoadingSpinner';
 
 function StockHistory() {
@@ -40,6 +38,7 @@ function StockHistory() {
   const [currentDateTime, setCurrentDateTime] = useState('');
   const [notificationCount, setNotificationCount] = useState(0);
   const [history, setHistory] = useState([]);
+  const [currentQuantities, setCurrentQuantities] = useState({});
   const [historyLoading, setHistoryLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState('all');
@@ -102,13 +101,23 @@ function StockHistory() {
     const loadHistory = async () => {
       setHistoryLoading(true);
       try {
-        const response = await getStockHistory();
+        const [response, partsResponse] = await Promise.all([
+          getStockHistory(),
+          getSpareParts().catch(() => null)
+        ]);
         if (!active) return;
         if (response?.success) {
           setHistory(Array.isArray(response.history) ? response.history : []);
         } else {
           setHistory([]);
         }
+        const quantityByPartId = {};
+        if (partsResponse?.success && Array.isArray(partsResponse.spareParts)) {
+          partsResponse.spareParts.forEach((part) => {
+            quantityByPartId[part.id] = part.quantity;
+          });
+        }
+        setCurrentQuantities(quantityByPartId);
       } catch (error) {
         if (!active) return;
         setHistory([]);
@@ -129,12 +138,6 @@ function StockHistory() {
     };
   }, [user]);
 
-  const counts = useMemo(() => {
-    const added = history.filter((row) => row.action === 'added').length;
-    const updated = history.filter((row) => row.action === 'updated').length;
-    return { all: history.length, added, updated };
-  }, [history]);
-
   const visibleHistory = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
     return history.filter((row) => {
@@ -152,15 +155,6 @@ function StockHistory() {
       return haystack.includes(query);
     });
   }, [history, actionFilter, searchTerm]);
-
-  const formatCurrency = (amount) => {
-    if (amount == null || amount === '') return '—';
-    const formatted = new Intl.NumberFormat('en-TZ', {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(Number(amount) || 0);
-    return `TZS ${formatted}`;
-  };
 
   const quantityChange = (row) => {
     if (row.quantity_before == null || row.quantity_after == null) {
@@ -330,42 +324,6 @@ function StockHistory() {
         <div className="spareparts-content">
           <p className="stock-history-hint">{t.stockHistoryHint}</p>
 
-          <div className="stats-row">
-            <button
-              type="button"
-              className={`stat-card history-stat ${actionFilter === 'all' ? 'active' : ''}`}
-              onClick={() => setActionFilter('all')}
-            >
-              <div className="stat-icon purple"><FaHistory /></div>
-              <div className="stat-info">
-                <h3>{t.stockAll}</h3>
-                <p className="stat-value">{counts.all}</p>
-              </div>
-            </button>
-            <button
-              type="button"
-              className={`stat-card history-stat ${actionFilter === 'added' ? 'active' : ''}`}
-              onClick={() => setActionFilter('added')}
-            >
-              <div className="stat-icon green"><FaPlus /></div>
-              <div className="stat-info">
-                <h3>{t.stockAdded}</h3>
-                <p className="stat-value">{counts.added}</p>
-              </div>
-            </button>
-            <button
-              type="button"
-              className={`stat-card history-stat ${actionFilter === 'updated' ? 'active' : ''}`}
-              onClick={() => setActionFilter('updated')}
-            >
-              <div className="stat-icon orange"><FaEdit /></div>
-              <div className="stat-info">
-                <h3>{t.stockUpdated}</h3>
-                <p className="stat-value">{counts.updated}</p>
-              </div>
-            </button>
-          </div>
-
           <div className="action-bar">
             <div className="search-box">
               <FaSearch className="search-icon" />
@@ -412,13 +370,15 @@ function StockHistory() {
                   <th>{t.quantityBefore}</th>
                   <th>{t.quantityAfter}</th>
                   <th>{t.stockChange}</th>
-                  <th>{t.wholesalePrice || 'Wholesale price'}</th>
-                  <th>{t.retailPrice || 'Retail price'}</th>
+                  <th>{t.currentQuantity || 'Current Quantity'}</th>
                   <th>{t.stockDetails}</th>
                 </tr>
               </thead>
               <tbody>
                 {visibleHistory.map((row, index) => {
+                    const currentQuantity = currentQuantities[row.sparepart_id] != null
+                      ? currentQuantities[row.sparepart_id]
+                      : (row.sparepart_quantity != null ? row.sparepart_quantity : row.quantity);
                     const change = quantityChange(row);
                     const changeClass = change == null ? '' : change > 0 ? 'up' : change < 0 ? 'down' : '';
                     const changeLabel = change == null
@@ -430,7 +390,7 @@ function StockHistory() {
                         <td>{formatDateTime(row.created_at)}</td>
                         <td>
                           <span className={`action-pill ${row.action === 'added' ? 'added' : 'updated'}`}>
-                            {row.action === 'added' ? t.stockAdded : t.stockUpdated}
+                            {row.action === 'added' ? (t.stockNew || 'New') : (t.stockEdited || 'Edited')}
                           </span>
                         </td>
                         <td>{row.part_name}</td>
@@ -440,8 +400,7 @@ function StockHistory() {
                         <td>{row.quantity_before == null ? '—' : row.quantity_before}</td>
                         <td>{row.quantity_after == null ? '—' : row.quantity_after}</td>
                         <td className={`qty-change ${changeClass}`}>{changeLabel}</td>
-                        <td>{formatCurrency(row.wholesale_price)}</td>
-                        <td>{formatCurrency(row.retail_price)}</td>
+                        <td>{currentQuantity == null || currentQuantity === '' ? '—' : currentQuantity}</td>
                         <td className="history-details">{row.details || '—'}</td>
                       </tr>
                     );

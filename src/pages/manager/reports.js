@@ -516,8 +516,14 @@ function ManagerReports() {
             .map((p, idx) => {
               const items =
                 p.items && p.items.length > 0
-                  ? p.items.map((item) => (item.sparepart_name || 'Unknown').replace(/</g, '&lt;')).join('<br />')
-                  : (p.sparepart_name || '—').replace(/</g, '&lt;');
+                  ? p.items
+                      .map((item) => {
+                        const name = (item.sparepart_name || 'Unknown').replace(/</g, '&lt;');
+                        const qty = Number(item.quantity) || 0;
+                        return `${name} <span class="item-qty">(${qty})</span>`;
+                      })
+                      .join('<br />')
+                  : `${(p.sparepart_name || '—').replace(/</g, '&lt;')} <span class="item-qty">(${Number(p.quantity) || 0})</span>`;
               const paymentType = String(p.payment_type || '—').replace(/</g, '&lt;');
               const paymentMethodCell = String(paymentMethodForPrintRow(p) || '—')
                 .replace(/</g, '&lt;')
@@ -690,6 +696,7 @@ function ManagerReports() {
             .tax-inv-table .tc { text-align: center; }
             .tax-inv-table .tr { text-align: right; }
             .tax-inv-table .tl { text-align: left; }
+            .item-qty { color: #c1121f; font-weight: 700; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .tax-inv-table tbody tr { background: #fff; }
             .tax-inv-footer {
               margin-top: 28px;
