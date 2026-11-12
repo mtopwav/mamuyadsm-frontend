@@ -78,3 +78,181 @@
 .dark-theme .manager-customers-table .customer-info-cell .info-icon {
   color: #f4a261;
 }
+
+/* Add customer modal */
+.customer-add-modal {
+  max-width: 480px;
+  border: 1px solid #eadfd6;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 24px 48px rgba(81, 28, 0, 0.18);
+}
+
+.customer-add-modal::before {
+  content: "";
+  display: block;
+  height: 4px;
+  background: linear-gradient(90deg, #511C00, #c47a45);
+}
+
+.customer-add-header {
+  background: linear-gradient(180deg, #fffaf6 0%, #f7efe8 100%);
+  border-bottom-color: #eadfd6;
+  padding: 18px 22px 16px;
+}
+
+.customer-add-header h2 {
+  color: #511C00;
+  letter-spacing: 0.01em;
+}
+
+.customer-add-form {
+  padding: 20px 22px 0;
+  background: #fffdfb;
+}
+
+.customer-add-form .form-group {
+  margin-bottom: 16px;
+}
+
+.customer-add-form .form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 600;
+  font-size: 0.78rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #511C00;
+}
+
+.customer-required {
+  color: #c4493a;
+}
+
+.customer-add-form .form-group input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1px solid #e6d3c6;
+  border-radius: 10px;
+  background: #fff;
+  color: #2c241f;
+  font-size: 0.95rem;
+  box-shadow: inset 0 1px 2px rgba(81, 28, 0, 0.04);
+  box-sizing: border-box;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.customer-add-form .form-group input:focus {
+  outline: none;
+  border-color: #511C00;
+  box-shadow: 0 0 0 3px rgba(81, 28, 0, 0.12);
+}
+
+.customer-phone-field {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid #e6d3c6;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: inset 0 1px 2px rgba(81, 28, 0, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.customer-phone-field:focus-within {
+  border-color: #511C00;
+  box-shadow: 0 0 0 3px rgba(81, 28, 0, 0.12);
+}
+
+.customer-phone-prefix {
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  background: #f7efe8;
+  border-right: 1px solid #e6d3c6;
+  color: #511C00;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.customer-phone-input {
+  flex: 1;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.customer-phone-input:focus {
+  box-shadow: none !important;
+}
+
+.customer-add-actions {
+  margin: 8px -22px 0;
+  padding: 16px 22px 20px;
+  border-top: 1px solid #eadfd6;
+  background: #fffaf6;
+}
+
+.customer-add-actions .cancel-btn {
+  border-color: #e6d3c6;
+  background: #fff;
+  color: #5c4638;
+  border-radius: 10px;
+}
+
+.customer-add-actions .cancel-btn:hover:not(:disabled) {
+  background: #f7efe8;
+}
+
+.customer-add-actions .submit-btn {
+  border-radius: 10px;
+  padding: 10px 22px;
+  background: linear-gradient(135deg, #511C00, #3a1400);
+  box-shadow: 0 8px 16px rgba(81, 28, 0, 0.22);
+}
+
+.customer-add-actions .submit-btn:disabled,
+.customer-add-actions .cancel-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.dark-theme .customer-add-modal {
+  border-color: var(--border-color, #3a2a22);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+}
+
+.dark-theme .customer-add-header,
+.dark-theme .customer-add-form,
+.dark-theme .customer-add-actions {
+  background: var(--bg-secondary, #1e1e1e);
+  border-color: var(--border-color, #3a2a22);
+}
+
+.dark-theme .customer-add-header h2,
+.dark-theme .customer-add-form .form-group label,
+.dark-theme .customer-phone-prefix {
+  color: #f4a261;
+}
+
+.dark-theme .customer-add-form .form-group input,
+.dark-theme .customer-phone-field {
+  background: var(--bg-primary, #121212);
+  border-color: var(--border-color, #3a2a22);
+  color: var(--text-primary, #eee);
+  box-shadow: none;
+}
+
+.dark-theme .customer-phone-prefix {
+  background: rgba(244, 162, 97, 0.12);
+  border-right-color: var(--border-color, #3a2a22);
+}
+
+.dark-theme .customer-add-actions .cancel-btn {
+  background: transparent;
+  color: var(--text-primary, #eee);
+  border-color: var(--border-color, #3a2a22);
+}

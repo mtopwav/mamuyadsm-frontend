@@ -34,6 +34,7 @@ import { useTranslation } from '../../utils/useTranslation';
 import ThemeToggle from '../../components/ThemeToggle';
 import { getUnviewedOperationsCount } from '../../utils/notifications';
 import { PageLoader, ButtonLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
 
 function Sales() {
   const navigate = useNavigate();
@@ -963,7 +964,7 @@ function Sales() {
               />
             </div>
             <div className="filter-box">
-              <select
+              <StyledSelect
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="status-filter"
@@ -972,10 +973,10 @@ function Sales() {
                 <option value="Pending">{t.pending}</option>
                 <option value="Approved">{t.approved}</option>
                 <option value="Rejected">{t.rejected}</option>
-              </select>
+              </StyledSelect>
             </div>
             <div className="filter-box">
-              <select
+              <StyledSelect
                 value={timePeriod}
                 onChange={(e) => setTimePeriod(e.target.value)}
                 className="status-filter"
@@ -984,7 +985,7 @@ function Sales() {
                 <option value="today">{t.today}</option>
                 <option value="weekly">{t.weekly}</option>
                 <option value="monthly">{t.monthly}</option>
-              </select>
+              </StyledSelect>
             </div>
             <button
               className="add-btn"
@@ -1543,7 +1544,7 @@ function Sales() {
 
               <div className="form-group">
                 <label>Employee *</label>
-                <select
+                <StyledSelect
                   value={selectedEmployeeId}
                   onChange={(e) => setSelectedEmployeeId(e.target.value)}
                   className="form-input"
@@ -1555,19 +1556,19 @@ function Sales() {
                       {capitalizeName(emp.full_name || emp.name)} - {emp.department || 'N/A'}
                     </option>
                   ))}
-                </select>
+                </StyledSelect>
               </div>
 
               <div className="form-group">
                 <label>Price Type</label>
-                <select
+                <StyledSelect
                   value={priceType}
                   onChange={(e) => setPriceType(e.target.value)}
                   className="form-input"
                 >
                   <option value="retail">Retail</option>
                   <option value="wholesale">Wholesale</option>
-                </select>
+                </StyledSelect>
               </div>
 
               <div className="form-group">

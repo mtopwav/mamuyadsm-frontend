@@ -26,6 +26,16 @@
   margin: 0;
 }
 
+.manager-spareparts-section .action-btn.download {
+  background: #0d6efd;
+  color: #fff;
+}
+
+.manager-spareparts-section .action-btn.download:hover {
+  background: #0b5ed7;
+  box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+}
+
 .manager-add-spares-btn {
   display: inline-flex;
   align-items: center;

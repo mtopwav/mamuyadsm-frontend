@@ -639,7 +639,8 @@
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group .styled-select-trigger {
   width: 100%;
   padding: 12px;
   border: 1px solid var(--border-color, #ddd);
@@ -651,7 +652,8 @@
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group .styled-select-trigger:focus {
   outline: none;
   border-color: #511C00;
   background-color: var(--bg-secondary, white);
@@ -971,14 +973,16 @@
 }
 
 .dark-theme .employees-container .form-group input,
-.dark-theme .employees-container .form-group select {
+.dark-theme .employees-container .form-group select,
+.dark-theme .employees-container .form-group .styled-select-trigger {
   background: var(--bg-primary);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
 }
 
 .dark-theme .employees-container .form-group input:focus,
-.dark-theme .employees-container .form-group select:focus {
+.dark-theme .employees-container .form-group select:focus,
+.dark-theme .employees-container .form-group .styled-select-trigger:focus {
   border-color: #f4a261;
   background: var(--bg-secondary);
   box-shadow: 0 0 0 2px rgba(244, 162, 97, 0.2);

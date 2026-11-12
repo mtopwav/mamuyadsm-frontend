@@ -31,6 +31,7 @@ import {
   FaBell
 } from 'react-icons/fa';
 import './categories&brands.css';
+import './finances.css';
 import logo from '../../images/logo.png';
 import {
   getEmployees,
@@ -41,6 +42,8 @@ import {
 } from '../../services/api';
 import { formatDateTime, getCurrentDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
+import StyledSelect from '../../components/StyledSelect';
+import StyledDateInput from '../../components/StyledDateInput';
 import ThemeToggle from '../../components/ThemeToggle';
 import { getUnviewedOperationsCount, markOperationAsViewed } from '../../utils/notifications';
 import { PageLoader } from '../../components/LoadingSpinner';
@@ -702,23 +705,23 @@ function Finances() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
               <FaCalendarAlt style={{ color: '#511C00' }} />
               <label style={{ fontSize: '0.9rem', color: '#666' }}>From</label>
-              <input
-                type="date"
-                value={dateFrom}
-                max={dateTo || undefined}
-                onChange={(e) => setDateFrom(e.target.value)}
-                className="search-input"
-                style={{ maxWidth: '170px' }}
-              />
+              <span className="finance-date-field">
+                <StyledDateInput
+                  value={dateFrom}
+                  max={dateTo || undefined}
+                  onChange={(e) => setDateFrom(e.target.value)}
+                  className="search-input"
+                />
+              </span>
               <label style={{ fontSize: '0.9rem', color: '#666' }}>To</label>
-              <input
-                type="date"
-                value={dateTo}
-                min={dateFrom || undefined}
-                onChange={(e) => setDateTo(e.target.value)}
-                className="search-input"
-                style={{ maxWidth: '170px' }}
-              />
+              <span className="finance-date-field">
+                <StyledDateInput
+                  value={dateTo}
+                  min={dateFrom || undefined}
+                  onChange={(e) => setDateTo(e.target.value)}
+                  className="search-input"
+                />
+              </span>
               {(dateFrom || dateTo) && (
                 <button
                   type="button"
@@ -1056,7 +1059,7 @@ function Finances() {
               </div>
               <div className="form-group">
                 <label>Status</label>
-                <select
+                <StyledSelect
                   value={formData.status}
                   onChange={(e) =>
                     setFormData({ ...formData, status: e.target.value })
@@ -1064,7 +1067,7 @@ function Finances() {
                 >
                   <option value="Active">Active</option>
                   <option value="Inactive">Inactive</option>
-                </select>
+                </StyledSelect>
               </div>
               <div className="form-actions">
                 <button

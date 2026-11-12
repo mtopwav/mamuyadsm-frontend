@@ -1,0 +1,19 @@
+.finance-date-field {
+  display: inline-block;
+  width: 170px;
+  max-width: 100%;
+}
+
+.finance-date-field .styled-date,
+.finance-date-field .styled-date-trigger {
+  width: 100%;
+}
+
+.finance-date-field .styled-date-trigger {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #333);
+  box-sizing: border-box;
+}

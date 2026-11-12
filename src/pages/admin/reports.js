@@ -28,6 +28,7 @@ import LanguageSelector from '../../components/LanguageSelector';
 import { getUnviewedOperationsCount } from '../../utils/notifications';
 import { getPayments, getSpareParts, getCustomers, getEmployees } from '../../services/api';
 import { PageLoader } from '../../components/LoadingSpinner';
+import StyledDateInput from '../../components/StyledDateInput';
 
 function AdminReports() {
   const navigate = useNavigate();
@@ -405,8 +406,7 @@ function AdminReports() {
             </div>
             <div className="reports-filter-group">
               <label className="reports-filter-label">From</label>
-              <input
-                type="date"
+              <StyledDateInput
                 value={dateFrom}
                 onChange={(e) => setDateFrom(e.target.value)}
                 className="status-filter"
@@ -414,9 +414,9 @@ function AdminReports() {
             </div>
             <div className="reports-filter-group">
               <label className="reports-filter-label">To</label>
-              <input
-                type="date"
+              <StyledDateInput
                 value={dateTo}
+                min={dateFrom || undefined}
                 onChange={(e) => setDateTo(e.target.value)}
                 className="status-filter"
               />

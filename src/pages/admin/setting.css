@@ -314,7 +314,8 @@
 }
 
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group .styled-select-trigger {
   padding: 12px 15px;
   border: 1px solid var(--border-color, #ddd);
   border-radius: 6px;
@@ -325,7 +326,8 @@
 }
 
 .form-group input:focus,
-.form-group select:focus {
+.form-group select:focus,
+.form-group .styled-select-trigger:focus {
   outline: none;
   border-color: #511C00;
   box-shadow: 0 0 0 3px rgba(26, 58, 95, 0.1);

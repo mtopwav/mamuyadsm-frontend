@@ -109,12 +109,15 @@
 }
 
 .filter-select,
-.search-input {
+.search-input,
+.styled-select-trigger.filter-select,
+.styled-date-trigger.filter-select {
   border: none;
   outline: none;
   background: transparent;
   font-size: 0.9rem;
   color: #333;
+  padding: 2px 0;
 }
 
 .filter-clear-dates {

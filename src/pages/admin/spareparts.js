@@ -49,6 +49,7 @@ import { useTranslation } from '../../utils/useTranslation';
 import ThemeToggle from '../../components/ThemeToggle';
 import { getUnviewedOperationsCount } from '../../utils/notifications';
 import { PageLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
 
 // Register Chart.js components
 ChartJS.register(
@@ -1280,7 +1281,7 @@ function SpareParts() {
                   <div className="sparepart-form-row">
                     <div className="sparepart-form-field">
                       <label htmlFor="sparepart-category">{t.category} *</label>
-                      <select
+                      <StyledSelect
                         id="sparepart-category"
                         required
                         className="sparepart-form-input"
@@ -1291,11 +1292,11 @@ function SpareParts() {
                         {categories.map((cat) => (
                           <option key={cat.id} value={cat.name}>{capitalizeName(cat.name)}</option>
                         ))}
-                      </select>
+                      </StyledSelect>
                     </div>
                     <div className="sparepart-form-field">
                       <label htmlFor="sparepart-brand">{t.brand} *</label>
-                      <select
+                      <StyledSelect
                         id="sparepart-brand"
                         required
                         className="sparepart-form-input"
@@ -1306,7 +1307,7 @@ function SpareParts() {
                         {brands.map((brand) => (
                           <option key={brand.id} value={brand.name}>{capitalizeName(brand.name)}</option>
                         ))}
-                      </select>
+                      </StyledSelect>
                     </div>
                   </div>
                   <div className="sparepart-form-field">

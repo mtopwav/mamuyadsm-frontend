@@ -976,6 +976,11 @@
   color: #511C00;
 }
 
+.sparepart-form-field .styled-select {
+  display: block;
+  width: 100%;
+}
+
 .sparepart-form-input {
   width: 100%;
   padding: 10px 14px;

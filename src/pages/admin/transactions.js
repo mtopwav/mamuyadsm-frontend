@@ -35,6 +35,8 @@ import ThemeToggle from '../../components/ThemeToggle';
 import LanguageSelector from '../../components/LanguageSelector';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
+import StyledDateInput from '../../components/StyledDateInput';
 
 function AdminTransactions() {
   const navigate = useNavigate();
@@ -741,14 +743,14 @@ function AdminTransactions() {
               <div className="section-actions">
                 <div className="filter-group">
                   <FaFilter className="filter-icon" />
-                  <select className="filter-select" value={paymentMethodFilter} onChange={(e) => setPaymentMethodFilter(e.target.value)}>
+                  <StyledSelect className="filter-select" value={paymentMethodFilter} onChange={(e) => setPaymentMethodFilter(e.target.value)}>
                     <option value="All">All payment methods</option>
                     {uniquePaymentMethods.map((method) => (
                       <option key={method} value={method}>
                         {method}
                       </option>
                     ))}
-                  </select>
+                  </StyledSelect>
                 </div>
                 <button
                   type="button"
@@ -777,9 +779,8 @@ function AdminTransactions() {
                       <label className="filter-label" htmlFor="admin-op-date-from">
                         From
                       </label>
-                      <input
+                      <StyledDateInput
                         id="admin-op-date-from"
-                        type="date"
                         className="filter-select"
                         value={dateFrom}
                         max={dateTo || undefined}
@@ -791,9 +792,8 @@ function AdminTransactions() {
                       <label className="filter-label" htmlFor="admin-op-date-to">
                         To
                       </label>
-                      <input
+                      <StyledDateInput
                         id="admin-op-date-to"
-                        type="date"
                         className="filter-select"
                         value={dateTo}
                         min={dateFrom || undefined}

@@ -111,3 +111,22 @@
     min-width: 1700px;
   }
 }
+
+.action-bar .styled-select-trigger.status-filter,
+.form-group .styled-select-trigger.form-input {
+  min-width: 160px;
+  padding: 10px 12px;
+  border: 1px solid #e6d3c6;
+  border-radius: 8px;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #2c241f);
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.action-bar .styled-select-trigger.status-filter:focus,
+.form-group .styled-select-trigger.form-input:focus {
+  outline: none;
+  border-color: #511C00;
+  box-shadow: 0 0 0 3px rgba(81, 28, 0, 0.12);
+}

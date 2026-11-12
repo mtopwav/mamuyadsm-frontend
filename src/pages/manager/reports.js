@@ -590,6 +590,7 @@ function ManagerReports() {
       return true;
     });
     const expensesTotal = expensesInRange.reduce((sum, expense) => sum + (Number(expense.amount) || 0), 0);
+    const amountEarnedToday = (Number(printSummary.totalAmount) || 0) - expensesTotal;
     const expensesRowsHtml = expensesLoadError
       ? `<tbody><tr><td colspan="6" style="text-align:center;padding:12px;">${String(expensesLoadError).replace(/</g, "&lt;")}</td></tr></tbody>`
       : expensesInRange.length === 0
@@ -698,6 +699,8 @@ function ManagerReports() {
             }
             .tax-inv-footer-row { margin-bottom: 12px; }
             .tax-inv-footer-row label { display: inline-block; min-width: 200px; font-weight: 600; }
+            .tax-inv-footer-row.earned { font-weight: 700; }
+            .tax-inv-footer-row.earned label { font-weight: 700; }
             .tax-inv-disclaimer {
               margin-top: 28px;
               font-style: italic;
@@ -727,7 +730,7 @@ function ManagerReports() {
             </div>
           </div>
 
-          <h1 class="tax-inv-title">MANAGER TRANSACTIONS REPORT</h1>
+          <h1 class="tax-inv-title">TRANSACTIONS REPORT</h1>
 
           <table class="tax-inv-table">
             ${tableHeader}
@@ -766,6 +769,7 @@ function ManagerReports() {
             <div class="tax-inv-footer-row"><label>Total Loan paid (TZS):</label> ${formatCurrency(printSummary.loanPaidTotal)}</div>
             <div class="tax-inv-footer-row"><label>Total amount received (TZS):</label> ${formatCurrency(printSummary.totalAmount)}</div>
             <div class="tax-inv-footer-row"><label>Total expenses (TZS):</label> ${formatCurrency(expensesTotal)}</div>
+            <div class="tax-inv-footer-row earned"><label>Total amount earned Today (TZS):</label> ${formatCurrency(amountEarnedToday)}</div>
           </div>
 
           <p class="tax-inv-disclaimer">*This is a computer generated transactions report, hence no signature is required.*</p>

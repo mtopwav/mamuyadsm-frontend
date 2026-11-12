@@ -14,12 +14,9 @@ import {
   FaChartBar,
   FaBox,
   FaUsers,
-  FaEye,
-  FaEdit,
-  FaPlus,
-  FaTrashAlt,
   FaCalendarAlt,
   FaPrint,
+  FaDownload,
   FaEnvelope,
 } from 'react-icons/fa';
 import './manager-layout.css';
@@ -27,14 +24,7 @@ import './spareparts.css';
 import logo from '../../images/logo.png';
 import ThemeToggle from '../../components/ThemeToggle';
 import LanguageSelector from '../../components/LanguageSelector';
-import {
-  getSpareParts,
-  getCategories,
-  getBrands,
-  addSparePart,
-  updateSparePart,
-  deleteSparePart,
-} from '../../services/api';
+import { getSpareParts } from '../../services/api';
 import { getCurrentDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader, InlineLoader } from '../../components/LoadingSpinner';
@@ -55,26 +45,6 @@ function ManagerSpareparts() {
   const [showLowStockOnly, setShowLowStockOnly] = useState(false);
   const [showSoldoutTodayOnly, setShowSoldoutTodayOnly] = useState(false);
   const [spareParts, setSpareParts] = useState([]);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
-  const [selectedPart, setSelectedPart] = useState(null);
-  const [showViewModal, setShowViewModal] = useState(false);
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [editingId, setEditingId] = useState(null);
-  /** Current stock when opening edit modal; add-form quantity is an increment on top of this. */
-  const [editAvailableQuantity, setEditAvailableQuantity] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [addForm, setAddForm] = useState({
-    part_name: '',
-    part_number: '',
-    category_id: '',
-    brand_id: '',
-    quantity: '',
-    wholesale_price: '',
-    retail_price: '',
-    location: '',
-    supplier: 'Mamuya Auto Spare Parts',
-  });
   const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTime());
 
   useEffect(() => {
@@ -105,25 +75,19 @@ function ManagerSpareparts() {
     setLoading(false);
   }, [navigate]);
 
-  // Fetch spare parts and related data from database
+  // Fetch spare parts from the database
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
       setDataLoading(true);
       try {
-        const [partsRes, catRes, brandRes] = await Promise.all([
-          getSpareParts(),
-          getCategories(),
-          getBrands(),
-        ]);
+        const partsRes = await getSpareParts();
         if (cancelled) return;
         if (partsRes?.success && Array.isArray(partsRes.spareParts)) {
           setSpareParts(partsRes.spareParts);
         } else {
           setSpareParts([]);
         }
-        if (catRes?.success && catRes.categories) setCategories(catRes.categories);
-        if (brandRes?.success && brandRes.brands) setBrands(brandRes.brands);
       } catch (error) {
         if (!cancelled) {
           console.error('Error loading data:', error);
@@ -182,30 +146,6 @@ function ManagerSpareparts() {
     return Number.isNaN(num) ? '0' : num.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   };
 
-  // Format number with commas for price inputs (e.g. 2000000 -> 2,000,000)
-  const formatPriceInputDisplay = (val) => {
-    if (val === '' || val == null) return '';
-    const s = String(val).replace(/,/g, '');
-    const parts = s.split('.');
-    const intPart = (parts[0] || '').replace(/\D/g, '');
-    const decPart = parts.length > 1 ? '.' + (parts[1] || '').replace(/\D/g, '').slice(0, 2) : '';
-    if (intPart === '' && !decPart) return '';
-    const formattedInt = intPart === '' ? '' : intPart.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    return formattedInt + decPart;
-  };
-
-  const handlePriceInputChange = (field, value) => {
-    const stripped = String(value).replace(/,/g, '');
-    const formatted = formatPriceInputDisplay(stripped);
-    setAddForm((f) => ({ ...f, [field]: formatted }));
-  };
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) return '—';
-    const d = new Date(dateStr);
-    return isNaN(d.getTime()) ? dateStr : d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-  };
-
   const categoryFilterOptions = [
     ...new Set(spareParts.map((p) => p.category_name).filter(Boolean)),
   ].sort((a, b) => String(a).toLowerCase().localeCompare(String(b).toLowerCase()));
@@ -240,18 +180,7 @@ function ManagerSpareparts() {
   const totalParts = spareParts.length;
   const lowStockCount = spareParts.filter((p) => (Number(p.quantity) || 0) < LOW_STOCK_THRESHOLD).length;
 
-  const handlePrintSpareparts = () => {
-    const reportWindow = window.open('', '_blank', 'width=1100,height=750');
-    if (!reportWindow) {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Popup blocked',
-        text: 'Please allow popups to print the report.',
-        confirmButtonColor: '#511C00',
-      });
-      return;
-    }
-
+  const handleSparepartsReport = (action) => {
     const safe = (v) => String(v ?? '').replace(/</g, '&lt;');
     const logoPath = typeof logo === 'string' ? logo : (logo && logo.default) ? logo.default : '';
     const logoUrl = logoPath
@@ -287,7 +216,7 @@ function ManagerSpareparts() {
     const totalQty = sortedParts.reduce((s, p) => s + (Number(p.quantity) || 0), 0);
     const lowQtyCount = sortedParts.filter((p) => (Number(p.quantity) || 0) < LOW_STOCK_THRESHOLD).length;
 
-    reportWindow.document.write(`
+    const html = `
       <!DOCTYPE html>
       <html>
         <head>
@@ -399,205 +328,46 @@ function ManagerSpareparts() {
           </div>
         </body>
       </html>
-    `);
+    `;
 
+    if (action === 'download') {
+      try {
+        const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        const day = new Date();
+        const stamp = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+        link.href = url;
+        link.download = `spare-parts-inventory-${stamp}.html`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to download document. Please try again.',
+          confirmButtonColor: '#511C00',
+        });
+      }
+      return;
+    }
+
+    const reportWindow = window.open('', '_blank', 'width=1100,height=750');
+    if (!reportWindow) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Popup blocked',
+        text: 'Please allow popups to print the report.',
+        confirmButtonColor: '#511C00',
+      });
+      return;
+    }
+    reportWindow.document.write(html);
     reportWindow.document.close();
     reportWindow.focus();
     reportWindow.print();
-  };
-  const handleView = (part) => {
-    setSelectedPart(part);
-    setShowViewModal(true);
-  };
-
-  const closeAddModal = () => {
-    setShowAddModal(false);
-    setEditingId(null);
-    setEditAvailableQuantity(null);
-  };
-
-  const openAddModal = () => {
-    setAddForm({
-      part_name: '',
-      part_number: '',
-      category_id: '',
-      brand_id: '',
-      quantity: '',
-      wholesale_price: '',
-      retail_price: '',
-      location: '',
-      supplier: 'Mamuya Auto Spare Parts',
-    });
-    setEditingId(null);
-    setEditAvailableQuantity(null);
-    setShowAddModal(true);
-  };
-
-  const openEditRowModal = (part) => {
-    setAddForm({
-      part_name: part.part_name || '',
-      part_number: part.part_number || '',
-      category_id: part.category_id || '',
-      brand_id: part.brand_id || '',
-      quantity: '',
-      wholesale_price: part.wholesale_price != null ? String(part.wholesale_price) : '',
-      retail_price: part.retail_price != null ? String(part.retail_price) : '',
-      location: part.location || '',
-      supplier: part.supplier || 'Mamuya Auto Spare Parts',
-    });
-    setEditAvailableQuantity(Number(part.quantity) || 0);
-    setEditingId(part.id);
-    setShowAddModal(true);
-  };
-
-  const handleDelete = async (part) => {
-    const result = await Swal.fire({
-      icon: 'warning',
-      title: 'Delete spare part?',
-      html: `Are you sure you want to delete <strong>${(part.part_name || '').replace(/</g, '&lt;')}</strong> (${(part.part_number || '').replace(/</g, '&lt;')})? This cannot be undone.`,
-      showCancelButton: true,
-      confirmButtonColor: '#dc3545',
-      cancelButtonColor: '#6c757d',
-      confirmButtonText: 'Yes, delete',
-      cancelButtonText: 'Cancel',
-    });
-    if (!result.isConfirmed) return;
-    try {
-      const response = await deleteSparePart(part.id);
-      if (response.success) {
-        setSpareParts((prev) => prev.filter((p) => p.id !== part.id));
-        if (selectedPart && selectedPart.id === part.id) {
-          setShowViewModal(false);
-          setSelectedPart(null);
-        }
-        if (editingId === part.id) {
-          closeAddModal();
-        }
-        Swal.fire({
-          icon: 'success',
-          title: 'Deleted',
-          text: 'Spare part deleted successfully.',
-          confirmButtonColor: '#511C00',
-        });
-      } else {
-        throw new Error(response.message || 'Failed to delete spare part');
-      }
-    } catch (error) {
-      console.error('Error deleting spare part:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message || 'Failed to delete spare part.',
-        confirmButtonColor: '#511C00',
-      });
-    }
-  };
-
-  const handleAddSpare = async (e) => {
-    e.preventDefault();
-    if (!addForm.part_name.trim() || !addForm.part_number.trim()) {
-      Swal.fire({ icon: 'warning', title: 'Required', text: 'Part name and part number are required.', confirmButtonColor: '#511C00' });
-      return;
-    }
-    if (!addForm.category_id || !addForm.brand_id) {
-      Swal.fire({ icon: 'warning', title: 'Required', text: 'Please select category and brand.', confirmButtonColor: '#511C00' });
-      return;
-    }
-    const baseStock = editingId != null ? Number(editAvailableQuantity) || 0 : 0;
-    const qtyRaw = String(addForm.quantity ?? '').trim();
-    let qty = 0;
-    let quantityToAdd = 0;
-    if (editingId) {
-      quantityToAdd = qtyRaw === '' ? 0 : parseInt(qtyRaw, 10);
-      if (qtyRaw !== '' && (Number.isNaN(quantityToAdd) || quantityToAdd < 0)) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Invalid',
-          text: 'Quantity to add must be a valid number (≥ 0), or leave blank to keep stock unchanged.',
-          confirmButtonColor: '#511C00',
-        });
-        return;
-      }
-      qty = baseStock + quantityToAdd;
-    } else {
-      qty = parseInt(addForm.quantity, 10);
-      if (Number.isNaN(qty) || qty < 0) {
-        Swal.fire({ icon: 'warning', title: 'Invalid', text: 'Quantity must be a valid number (≥ 0).', confirmButtonColor: '#511C00' });
-        return;
-      }
-    }
-    const wholesalePrice = addForm.wholesale_price === '' ? null : parseFloat(String(addForm.wholesale_price).replace(/,/g, ''));
-    const retailPrice = addForm.retail_price === '' ? null : parseFloat(String(addForm.retail_price).replace(/,/g, ''));
-    if (retailPrice == null || Number.isNaN(retailPrice) || retailPrice < 0) {
-      Swal.fire({ icon: 'warning', title: 'Invalid', text: 'Retail price must be a valid number (≥ 0).', confirmButtonColor: '#511C00' });
-      return;
-    }
-    if (wholesalePrice != null && (Number.isNaN(wholesalePrice) || wholesalePrice < 0)) {
-      Swal.fire({ icon: 'warning', title: 'Invalid', text: 'Wholesale price must be a valid number (≥ 0) if provided.', confirmButtonColor: '#511C00' });
-      return;
-    }
-    if (!addForm.location.trim()) {
-      Swal.fire({ icon: 'warning', title: 'Required', text: 'Location is required.', confirmButtonColor: '#511C00' });
-      return;
-    }
-    setSubmitting(true);
-    const idBeingEdited = editingId;
-    try {
-      const payload = {
-        part_name: addForm.part_name.trim(),
-        part_number: addForm.part_number.trim(),
-        category_id: parseInt(addForm.category_id, 10),
-        brand_id: parseInt(addForm.brand_id, 10),
-        quantity: qty,
-        wholesale_price: wholesalePrice,
-        retail_price: retailPrice,
-        status: 'Active',
-        location: addForm.location.trim(),
-        supplier: addForm.supplier.trim() || 'Mamuya Auto Spare Parts',
-      };
-      if (!editingId) {
-        payload.quantity_added = qty;
-      } else if (quantityToAdd > 0) {
-        payload.quantity_to_add = quantityToAdd;
-      }
-
-      let response;
-      if (idBeingEdited) {
-        // Full-row update of existing spare part
-        response = await updateSparePart(idBeingEdited, payload);
-      } else {
-        // Create new spare part
-        response = await addSparePart(payload);
-      }
-
-      if (response.success && response.sparePart) {
-        setSpareParts((prev) => {
-          if (idBeingEdited) {
-            return prev.map((p) => (p.id === idBeingEdited ? response.sparePart : p));
-          }
-          return [response.sparePart, ...prev];
-        });
-        closeAddModal();
-        Swal.fire({
-          icon: 'success',
-          title: 'Success',
-          text: idBeingEdited ? 'Spare part updated successfully.' : 'Spare part added successfully.',
-          confirmButtonColor: '#511C00',
-        });
-      } else {
-        throw new Error(response.message || 'Failed to save spare part');
-      }
-    } catch (error) {
-      console.error('Error adding spare part:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: error.message || 'Failed to add spare part.',
-        confirmButtonColor: '#511C00',
-      });
-    } finally {
-      setSubmitting(false);
-    }
   };
 
   if (loading && spareParts.length === 0) {
@@ -735,11 +505,11 @@ function ManagerSpareparts() {
             <div className="manager-spareparts-section-header">
               <h3 className="manager-section-title">{t.inventory}</h3>
               <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                <button type="button" className="action-btn print" onClick={handlePrintSpareparts}>
+                <button type="button" className="action-btn print" onClick={() => handleSparepartsReport('print')}>
                   <FaPrint /> {t.print || 'Print'}
                 </button>
-                <button type="button" className="manager-add-spares-btn" onClick={openAddModal}>
-                  <FaPlus /> {t.addSpares}
+                <button type="button" className="action-btn download" onClick={() => handleSparepartsReport('download')}>
+                  <FaDownload /> {t.download || 'Download'}
                 </button>
               </div>
             </div>
@@ -747,7 +517,6 @@ function ManagerSpareparts() {
               <table className="payments-table manager-spareparts-table">
                 <thead>
                   <tr>
-                    <th className="manager-col-actions">Actions</th>
                     <th className="manager-col-serial">S.No</th>
                     <th>Part Name</th>
                     <th>Part Number</th>
@@ -763,11 +532,11 @@ function ManagerSpareparts() {
                 <tbody>
                   {dataLoading ? (
                     <tr>
-                      <td colSpan="11" className="no-data loading-cell"><InlineLoader message={t.loadingSpareParts} size="md" /></td>
+                      <td colSpan="10" className="no-data loading-cell"><InlineLoader message={t.loadingSpareParts} size="md" /></td>
                     </tr>
                   ) : sortedParts.length === 0 ? (
                     <tr>
-                      <td colSpan="11" className="no-data">
+                      <td colSpan="10" className="no-data">
                         No spare parts found
                       </td>
                     </tr>
@@ -782,19 +551,6 @@ function ManagerSpareparts() {
                             : 'manager-qty-low';
                       return (
                         <tr key={p.id}>
-                          <td className="manager-col-actions">
-                            <div className="action-buttons">
-                              <button className="action-btn view" title={t.view} onClick={() => handleView(p)}>
-                                <FaEye />
-                              </button>
-                              <button className="action-btn edit" title="Edit row" onClick={() => openEditRowModal(p)}>
-                                <FaEdit />
-                              </button>
-                              <button className="action-btn delete" title="Delete" onClick={() => handleDelete(p)}>
-                                <FaTrashAlt />
-                              </button>
-                            </div>
-                          </td>
                           <td className="manager-col-serial">{index + 1}</td>
                           <td>{capitalizeName(p.part_name)}</td>
                           <td>{(p.part_number || '—').toUpperCase()}</td>
@@ -818,233 +574,6 @@ function ManagerSpareparts() {
         </div>
       </div>
 
-      {showViewModal && selectedPart && (
-        <div className="manager-modal-overlay" onClick={() => setShowViewModal(false)}>
-          <div className="manager-modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="manager-modal-header">
-              <h3>{t.sparePartDetails}</h3>
-              <button type="button" className="manager-modal-close" onClick={() => setShowViewModal(false)}>
-                ×
-              </button>
-            </div>
-            <div className="manager-modal-body">
-              <div className="manager-view-row">
-                <label>Part Name</label>
-                <span>{capitalizeName(selectedPart.part_name)}</span>
-              </div>
-              <div className="manager-view-row">
-                <label>Part Number</label>
-                <span>{(selectedPart.part_number || '—').toUpperCase()}</span>
-              </div>
-              <div className="manager-view-row">
-                <label>{t.category}</label>
-                <span>{capitalizeName(selectedPart.category_name) || '—'}</span>
-              </div>
-              <div className="manager-view-row">
-                <label>{t.brand}</label>
-                <span>{(selectedPart.brand_name || '—').toUpperCase()}</span>
-              </div>
-              <div className="manager-view-row">
-                <label>Quantity</label>
-                <span className={(Number(selectedPart.quantity) || 0) < LOW_STOCK_THRESHOLD ? 'manager-qty-low' : ''}>
-                  {selectedPart.quantity ?? '—'}
-                </span>
-              </div>
-              <div className="manager-view-row">
-                <label>{t.wholesalePrice}</label>
-                <span>{formatPrice(selectedPart.wholesale_price)}</span>
-              </div>
-              <div className="manager-view-row">
-                <label>Retail Price (TZS)</label>
-                <span>{formatPrice(selectedPart.retail_price)}</span>
-              </div>
-              <div className="manager-view-row">
-                <label>Total Value (TZS)</label>
-                <span>{formatPrice(selectedPart.total_value)}</span>
-              </div>
-              <div className="manager-view-row">
-                <label>Status</label>
-                <span className={`status-badge ${(selectedPart.status || '').toLowerCase() === 'active' ? 'completed' : 'pending'}`}>
-                  {capitalizeName(selectedPart.status) || '—'}
-                </span>
-              </div>
-              <div className="manager-view-row">
-                <label>{t.location}</label>
-                <span>{selectedPart.location || '—'}</span>
-              </div>
-              <div className="manager-view-row">
-                <label>{t.supplier}</label>
-                <span>{selectedPart.supplier || '—'}</span>
-              </div>
-              <div className="manager-view-row">
-                <label>{t.dateAdded}</label>
-                <span>{formatDate(selectedPart.date_added || selectedPart.created_at)}</span>
-              </div>
-            </div>
-            <div className="manager-modal-footer">
-              <button type="button" className="manager-modal-btn secondary" onClick={() => setShowViewModal(false)}>
-                {t.close}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {showAddModal && (
-        <div className="manager-modal-overlay" onClick={closeAddModal}>
-          <div className="manager-modal-content manager-add-spare-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="manager-modal-header">
-              <h3>{editingId ? 'Edit spare part' : 'Add spare part'}</h3>
-              <button type="button" className="manager-modal-close" onClick={closeAddModal}>×</button>
-            </div>
-            <form onSubmit={handleAddSpare} className="manager-add-spare-form">
-              <div className="manager-form-body">
-                <div className="manager-form-group">
-                  <label>{t.partName} <span className="manager-required">*</span></label>
-                  <input
-                    type="text"
-                    value={addForm.part_name}
-                    onChange={(e) => setAddForm((f) => ({ ...f, part_name: e.target.value }))}
-                    placeholder="e.g. Brake Pad"
-                    required
-                    className="manager-form-input"
-                  />
-                </div>
-                <div className="manager-form-group">
-                  <label>Part number <span className="manager-required">*</span></label>
-                  <input
-                    type="text"
-                    value={addForm.part_number}
-                    onChange={(e) => setAddForm((f) => ({ ...f, part_number: e.target.value }))}
-                    placeholder="e.g. BP-001"
-                    required
-                    className="manager-form-input"
-                  />
-                </div>
-                <div className="manager-form-group">
-                  <label>{t.category} <span className="manager-required">*</span></label>
-                  <StyledSelect
-                    value={addForm.category_id}
-                    onChange={(e) => setAddForm((f) => ({ ...f, category_id: e.target.value }))}
-                    required
-                    className="manager-form-input"
-                  >
-                    <option value="">{t.selectCategory}</option>
-                    {[...categories]
-                      .sort((a, b) => String(a.name || '').toLowerCase().localeCompare(String(b.name || '').toLowerCase()))
-                      .map((cat) => (
-                        <option key={cat.id} value={cat.id}>{capitalizeName(cat.name)}</option>
-                      ))}
-                  </StyledSelect>
-                </div>
-                <div className="manager-form-group">
-                  <label>Brand <span className="manager-required">*</span></label>
-                  <StyledSelect
-                    value={addForm.brand_id}
-                    onChange={(e) => setAddForm((f) => ({ ...f, brand_id: e.target.value }))}
-                    required
-                    className="manager-form-input"
-                  >
-                    <option value="">Select brand</option>
-                    {[...brands]
-                      .sort((a, b) => String(a.name || '').toLowerCase().localeCompare(String(b.name || '').toLowerCase()))
-                      .map((b) => (
-                        <option key={b.id} value={b.id}>{capitalizeName(b.name)}</option>
-                      ))}
-                  </StyledSelect>
-                </div>
-                {editingId != null && (
-                  <div className="manager-form-group">
-                    <label>{t.availableQuantity || 'Available quantity'}</label>
-                    <input
-                      type="text"
-                      readOnly
-                      value={editAvailableQuantity ?? ''}
-                      className="manager-form-input"
-                      style={{ backgroundColor: 'var(--manager-bg-muted, #f1f5f9)', cursor: 'not-allowed' }}
-                    />
-                  </div>
-                )}
-                <div className="manager-form-group">
-                  <label>
-                    {editingId != null ? t.addToStock || 'Quantity to add' : t.quantity}{' '}
-                    {editingId == null && <span className="manager-required">*</span>}
-                  </label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={addForm.quantity}
-                    onChange={(e) => setAddForm((f) => ({ ...f, quantity: e.target.value }))}
-                    placeholder={editingId != null ? (t.optionalAddStock || '0 = no change') : '0'}
-                    required={editingId == null}
-                    className="manager-form-input"
-                  />
-                  {editingId != null && (
-                    <small style={{ display: 'block', marginTop: 6, opacity: 0.85 }}>
-                      {t.addStockHint || 'Leave empty or 0 to keep current stock. Enter an amount to add to available quantity.'}
-                    </small>
-                  )}
-                </div>
-                <div className="manager-form-row">
-                  <div className="manager-form-group">
-                    <label>{t.wholesalePrice} <span className="manager-required">*</span></label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={addForm.wholesale_price}
-                      onChange={(e) => handlePriceInputChange('wholesale_price', e.target.value)}
-                      placeholder="Enter Price"
-                      required
-                      className="manager-form-input"
-                    />
-                  </div>
-                  <div className="manager-form-group">
-                    <label>Retail price (TZS) <span className="manager-required">*</span></label>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={addForm.retail_price}
-                      onChange={(e) => handlePriceInputChange('retail_price', e.target.value)}
-                      placeholder="Enter Price"
-                      required
-                      className="manager-form-input"
-                    />
-                  </div>
-                </div>
-                <div className="manager-form-group">
-                  <label>{t.location} <span className="manager-required">*</span></label>
-                  <input
-                    type="text"
-                    value={addForm.location}
-                    onChange={(e) => setAddForm((f) => ({ ...f, location: e.target.value }))}
-                    placeholder="e.g. Shelf A1"
-                    required
-                    className="manager-form-input"
-                  />
-                </div>
-                <div className="manager-form-group">
-                  <label>{t.supplier}</label>
-                  <input
-                    type="text"
-                    value={addForm.supplier}
-                    readOnly
-                    className="manager-form-input"
-                    style={{ backgroundColor: 'var(--manager-bg-muted, #f1f5f9)', cursor: 'not-allowed' }}
-                  />
-                </div>
-              </div>
-              <div className="manager-modal-footer">
-                <button type="button" className="manager-modal-btn secondary" onClick={closeAddModal}>
-                  {t.cancel}
-                </button>
-                <button type="submit" className="manager-modal-btn primary" disabled={submitting}>
-                  {submitting ? t.adding : t.addSparePart}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

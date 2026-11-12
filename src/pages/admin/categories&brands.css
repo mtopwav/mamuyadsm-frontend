@@ -564,7 +564,8 @@
 }
 
 .form-group input,
-.form-group textarea {
+.form-group textarea,
+.form-group .styled-select-trigger {
   width: 100%;
   padding: 12px 15px;
   border: 1px solid var(--border-color, #ddd);
@@ -583,7 +584,8 @@
 }
 
 .form-group input:focus,
-.form-group textarea:focus {
+.form-group textarea:focus,
+.form-group .styled-select-trigger:focus {
   outline: none;
   border-color: #511C00;
   box-shadow: 0 0 0 3px rgba(26, 58, 95, 0.1);

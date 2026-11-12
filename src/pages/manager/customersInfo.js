@@ -519,20 +519,20 @@ function ManagerCustomersInfo() {
 
       {showAddModal && (
         <div className="modal-overlay" onClick={() => setShowAddModal(false)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header">
+          <div className="modal-content customer-add-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header customer-add-header">
               <h2>{t.addCustomer}</h2>
-              <button className="close-btn" onClick={() => setShowAddModal(false)}>×</button>
+              <button type="button" className="close-btn" onClick={() => setShowAddModal(false)}>×</button>
             </div>
-            <form onSubmit={handleAddCustomer} className="customer-form">
+            <form onSubmit={handleAddCustomer} className="customer-form customer-add-form">
               <div className="form-group">
-                <label>{t.fullName} *</label>
+                <label>{t.fullName} <span className="customer-required">*</span></label>
                 <input type="text" required value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} placeholder="Enter Customer name" />
               </div>
               <div className="form-group">
-                <label>{t.phone} *</label>
-                <div style={{ display: 'flex', alignItems: 'center', border: '1px solid #ddd', borderRadius: '5px', overflow: 'hidden' }}>
-                  <span style={{ padding: '12px 15px', background: '#f8f9fa', borderRight: '1px solid #ddd', color: '#2c3e50', fontWeight: '500', whiteSpace: 'nowrap' }}>+255</span>
+                <label>{t.phone} <span className="customer-required">*</span></label>
+                <div className="customer-phone-field">
+                  <span className="customer-phone-prefix">+255</span>
                   <input
                     type="tel"
                     required
@@ -540,15 +540,15 @@ function ManagerCustomersInfo() {
                     value={formData.phone.startsWith('+255') ? formData.phone.substring(4) : formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: '+255' + e.target.value.replace(/\D/g, '').slice(0, 9) })}
                     placeholder="712345678"
-                    style={{ flex: 1, border: 'none', padding: '12px 15px', outline: 'none' }}
+                    className="customer-phone-input"
                   />
                 </div>
               </div>
               <div className="form-group">
-                <label>{t.address} *</label>
+                <label>{t.address} <span className="customer-required">*</span></label>
                 <input type="text" required value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder={t.address} />
               </div>
-              <div className="form-actions">
+              <div className="form-actions customer-add-actions">
                 <button type="button" className="cancel-btn" onClick={() => setShowAddModal(false)} disabled={addingCustomer}>{t.cancel}</button>
                 <button type="submit" className="submit-btn" disabled={addingCustomer}>{addingCustomer ? t.loading : t.addCustomer}</button>
               </div>

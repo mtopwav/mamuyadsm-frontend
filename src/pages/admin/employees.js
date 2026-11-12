@@ -28,6 +28,7 @@ import {
 import './employees.css';
 import logo from '../../images/logo.png';
 import { addEmployee, getEmployees, updateEmployee, deleteEmployee } from '../../services/api';
+import StyledSelect from '../../components/StyledSelect';
 import { getCurrentDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
 import ThemeToggle from '../../components/ThemeToggle';
@@ -807,7 +808,7 @@ function Employees() {
               <div className="form-row">
                 <div className="form-group">
                   <label>{t.position} *</label>
-                  <select
+                  <StyledSelect
                     required
                     value={formData.position}
                     onChange={(e) => setFormData({ ...formData, position: e.target.value })}
@@ -816,11 +817,11 @@ function Employees() {
                     {addEmployeePositions.map(pos => (
                       <option key={pos} value={pos}>{pos}</option>
                     ))}
-                  </select>
+                  </StyledSelect>
                 </div>
                 <div className="form-group">
                   <label>{t.department} *</label>
-                  <select
+                  <StyledSelect
                     required
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
@@ -829,7 +830,7 @@ function Employees() {
                     {departments.map(dept => (
                       <option key={dept} value={dept}>{dept}</option>
                     ))}
-                  </select>
+                  </StyledSelect>
                 </div>
               </div>
               <div className="form-group">
@@ -938,7 +939,7 @@ function Employees() {
               <div className="form-row">
                 <div className="form-group">
                   <label>Position *</label>
-                  <select
+                  <StyledSelect
                     required
                     value={formData.position}
                     onChange={(e) => setFormData({ ...formData, position: e.target.value })}
@@ -947,11 +948,11 @@ function Employees() {
                     {positions.map(pos => (
                       <option key={pos} value={pos}>{pos}</option>
                     ))}
-                  </select>
+                  </StyledSelect>
                 </div>
                 <div className="form-group">
                   <label>Department *</label>
-                  <select
+                  <StyledSelect
                     required
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
@@ -960,7 +961,7 @@ function Employees() {
                     {departments.map(dept => (
                       <option key={dept} value={dept}>{dept}</option>
                     ))}
-                  </select>
+                  </StyledSelect>
                 </div>
               </div>
               <div className="form-group">

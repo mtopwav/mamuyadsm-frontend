@@ -36,6 +36,7 @@ import LanguageSelector from '../../components/LanguageSelector';
 import { getUnviewedOperationsCount } from '../../utils/notifications';
 import { getSectionFromPath } from '../../utils/settingsSection';
 import { PageLoader } from '../../components/LoadingSpinner';
+import StyledSelect from '../../components/StyledSelect';
 
 function Settings() {
   const navigate = useNavigate();
@@ -585,30 +586,30 @@ function Settings() {
                       <FaGlobe className="form-icon" />
                       {t.language}
                     </label>
-                    <select
+                    <StyledSelect
                       value={systemSettings.language}
                       onChange={handleLanguageChange}
                     >
                       <option value="en">English</option>
                       <option value="sw">Swahili</option>
-                    </select>
+                    </StyledSelect>
                   </div>
                   <div className="form-group">
                     <label>
                       <FaClock className="form-icon" />
                       {t.timezone}
                     </label>
-                    <select
+                    <StyledSelect
                       value={systemSettings.timezone}
                       onChange={(e) => setSystemSettings({...systemSettings, timezone: e.target.value})}
                     >
                       <option value="Africa/Dar_es_Salaam">Africa/Dar es Salaam (EAT)</option>
                       <option value="UTC">UTC</option>
-                    </select>
+                    </StyledSelect>
                   </div>
                   <div className="form-group">
                     <label>{t.dateFormat}</label>
-                    <select
+                    <StyledSelect
                       value={systemSettings.dateFormat}
                       onChange={(e) => {
                         const newFormat = e.target.value;
@@ -624,14 +625,14 @@ function Settings() {
                       <option value="DD/MM/YYYY">DD/MM/YYYY</option>
                       <option value="MM/DD/YYYY">MM/DD/YYYY</option>
                       <option value="YYYY-MM-DD">YYYY-MM-DD</option>
-                    </select>
+                    </StyledSelect>
                     <div style={{ marginTop: '8px', fontSize: '0.9rem', color: '#666', fontStyle: 'italic' }}>
                       Preview: {getCurrentDateTime()}
                     </div>
                   </div>
                   <div className="form-group">
                     <label>{t.timeFormat}</label>
-                    <select
+                    <StyledSelect
                       value={systemSettings.timeFormat}
                       onChange={(e) => {
                         const newFormat = e.target.value;
@@ -646,7 +647,7 @@ function Settings() {
                     >
                       <option value="24h">24 Hour</option>
                       <option value="12h">12 Hour</option>
-                    </select>
+                    </StyledSelect>
                     <div style={{ marginTop: '8px', fontSize: '0.9rem', color: '#666', fontStyle: 'italic' }}>
                       Preview: {getCurrentDateTime()}
                     </div>
@@ -656,7 +657,7 @@ function Settings() {
                       <FaPalette className="form-icon" />
                       {t.theme}
                     </label>
-                    <select
+                    <StyledSelect
                       value={systemSettings.theme}
                       onChange={(e) => {
                         const newTheme = e.target.value;
@@ -668,7 +669,7 @@ function Settings() {
                       <option value="light">{t.light}</option>
                       <option value="dark">{t.dark}</option>
                       <option value="auto">{t.auto}</option>
-                    </select>
+                    </StyledSelect>
                     <div style={{ marginTop: '8px', fontSize: '0.9rem', color: '#666', fontStyle: 'italic' }}>
                       {systemSettings.theme === 'auto' 
                         ? `Auto: ${window.matchMedia('(prefers-color-scheme: dark)').matches ? t.dark : t.light}`
