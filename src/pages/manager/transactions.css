@@ -283,6 +283,20 @@
   background: #218838;
 }
 
+.manager-transactions-table-section .payments-table td:nth-child(1) .action-btn.refund {
+  background: #b45309;
+  color: #fff;
+}
+
+.manager-transactions-table-section .payments-table td:nth-child(1) .action-btn.refund:hover {
+  background: #92400e;
+}
+
+.status-badge.returned {
+  background: #fff4e5;
+  color: #9a6200;
+}
+
 /* Transaction view & edit modals */
 .modal-content.transaction-edit-modal,
 .modal-content.transaction-view-modal {

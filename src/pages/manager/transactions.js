@@ -23,14 +23,15 @@ import {
   FaEdit,
   FaPrint,
   FaDownload,
-  FaEnvelope
+  FaEnvelope,
+  FaUndo
 } from 'react-icons/fa';
 import './manager-layout.css';
 import './transactions.css';
 import logo from '../../images/logo.png';
 import ThemeToggle from '../../components/ThemeToggle';
 import LanguageSelector from '../../components/LanguageSelector';
-import { getPayments, updatePaymentStatus, getSpareParts, apiRequest, deletePayment, updatePaymentDetails } from '../../services/api';
+import { getPayments, updatePaymentStatus, getSpareParts, apiRequest, deletePayment, updatePaymentDetails, returnPayment } from '../../services/api';
 import { getCurrentDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader } from '../../components/LoadingSpinner';
@@ -1326,6 +1327,54 @@ function ManagerTransactions() {
     await performStatusChange(payment, newStatus, { status: 'none', amount: 0 }, selectedPaymentType);
   };
 
+  const handleRefund = async (payment) => {
+    const received = Number(payment.amount_received) || 0;
+    if (received <= 0) return;
+    const result = await Swal.fire({
+      title: 'Refund this transaction?',
+      text: `Refund TZS ${formatPrice(received)} received from ${capitalizeName(payment.customer_name) || 'this customer'}.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#6c757d',
+      confirmButtonText: 'Refund',
+      cancelButtonText: t.cancel || 'Cancel'
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      const response = await returnPayment(payment.id, { return_amount: received });
+      if (!response?.success) throw new Error(response?.message || 'Failed to refund transaction');
+      setPayments((prev) =>
+        prev.map((row) =>
+          row.id === payment.id
+            ? {
+                ...row,
+                status: 'Returned',
+                amount_received: response.payment?.amount_received ?? 0,
+                return_amount: response.payment?.return_amount ?? received
+              }
+            : row
+        )
+      );
+      Swal.fire({
+        icon: 'success',
+        title: 'Refunded',
+        text: `TZS ${formatPrice(received)} was refunded.`,
+        confirmButtonColor: '#511C00',
+        timer: 1800,
+        showConfirmButton: false
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: 'error',
+        title: t.error || 'Error',
+        text: error.message || 'Failed to refund transaction.',
+        confirmButtonColor: '#511C00'
+      });
+    }
+  };
+
   const isLoanPayment = (payment) =>
     String(payment?.payment_type ?? '').trim().toLowerCase() === 'loan';
 
@@ -1560,7 +1609,9 @@ function ManagerTransactions() {
                       : Math.max(0, total - receivedFromDB);
 
                     const displayStatus =
-                      payment.status === 'Rejected'
+                      String(payment.status || '').toLowerCase() === 'returned'
+                        ? 'Returned'
+                        : payment.status === 'Rejected'
                         ? 'Rejected'
                         : payment.status === 'Approved' || amountRemain === 0
                         ? 'Approved'
@@ -1583,6 +1634,17 @@ function ManagerTransactions() {
                               >
                                 <FaMoneyBillWave className="action-icon" />
                                 <span className="action-text">{t.receiveMoney || 'Receive Money'}</span>
+                              </button>
+                            )}
+                            {receivedFromDB > 0 && String(payment.status || '').toLowerCase() !== 'returned' && (
+                              <button
+                                type="button"
+                                className="action-btn refund"
+                                title="Refund"
+                                onClick={() => handleRefund(payment)}
+                              >
+                                <FaUndo className="action-icon" />
+                                <span className="action-text">Refund</span>
                               </button>
                             )}
                             {payment.status === 'Pending' && (
@@ -1732,13 +1794,20 @@ function ManagerTransactions() {
                         <td>
                           <span
                             className={`status-badge ${
-                              displayStatus === 'Approved' ? 'approved' : displayStatus === 'Rejected' ? 'rejected' : 'pending'
+                              displayStatus === 'Approved'
+                                ? 'approved'
+                                : displayStatus === 'Rejected'
+                                ? 'rejected'
+                                : displayStatus === 'Returned'
+                                ? 'returned'
+                                : 'pending'
                             }`}
                           >
                             {displayStatus === 'Approved' && <FaCheckCircle />}
                             {displayStatus === 'Rejected' && <FaTimesCircle />}
+                            {displayStatus === 'Returned' && <FaUndo />}
                             {displayStatus === 'Pending' && <FaClock />}
-                            {displayStatus === 'Approved' ? t.approved : displayStatus === 'Rejected' ? t.rejected : t.pending}
+                            {displayStatus === 'Approved' ? t.approved : displayStatus === 'Rejected' ? t.rejected : displayStatus === 'Returned' ? 'Returned' : t.pending}
                           </span>
                         </td>
                         <td>{formatDateTime(payment.created_at)}</td>
