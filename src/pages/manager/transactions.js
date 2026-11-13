@@ -35,7 +35,6 @@ import { getCurrentDateTime } from '../../utils/dateTime';
 import { useTranslation } from '../../utils/useTranslation';
 import { PageLoader } from '../../components/LoadingSpinner';
 import StyledSelect from '../../components/StyledSelect';
-import StyledDateInput from '../../components/StyledDateInput';
 
 function ManagerTransactions() {
   const navigate = useNavigate();
@@ -47,8 +46,6 @@ function ManagerTransactions() {
   const [searchTerm, setSearchTerm] = useState('');
   // Default to 'All' so all payments from the database are visible initially
   const [statusFilter, setStatusFilter] = useState('All');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
   const [payments, setPayments] = useState([]);
   const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTime());
   const [selectedPayment, setSelectedPayment] = useState(null);
@@ -1332,36 +1329,25 @@ function ManagerTransactions() {
   const isLoanPayment = (payment) =>
     String(payment?.payment_type ?? '').trim().toLowerCase() === 'loan';
 
-  /** Same basis as manager reports: loans use last activity; others use approval/confirmation when set. */
-  const getRecordDateForTransactions = (payment) => {
-    if (!payment) return null;
-    if (isLoanPayment(payment)) {
-      return payment.updated_at || payment.created_at;
-    }
-    if (payment.approved_at || payment.approvedAt || payment.confirmed_at) {
-      return payment.approved_at || payment.approvedAt || payment.confirmed_at;
-    }
-    return payment.created_at;
-  };
+  const todayDate = (() => {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  })();
 
-  const isPaymentInDateRange = (payment) => {
-    if (!dateFrom && !dateTo) return true;
-    const recordDate = getRecordDateForTransactions(payment);
-    if (!recordDate) return false;
-    const d = new Date(recordDate);
-    if (isNaN(d.getTime())) return false;
+  const isCreatedToday = (payment) => {
+    if (!payment?.created_at) return false;
+    const d = new Date(payment.created_at);
+    if (Number.isNaN(d.getTime())) return false;
     const dateOnly = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-    if (dateFrom && dateOnly < dateFrom) return false;
-    if (dateTo && dateOnly > dateTo) return false;
-    return true;
+    return dateOnly === todayDate;
   };
 
-  const paymentsInDateRange = payments.filter((p) => !isLoanPayment(p) && isPaymentInDateRange(p));
+  const paymentsInDateRange = payments.filter((p) => !isLoanPayment(p) && isCreatedToday(p));
 
   // Filter payments from database by calendar range, search and status
   const filteredPayments = payments.filter((payment) => {
     if (isLoanPayment(payment)) return false;
-    if (!isPaymentInDateRange(payment)) return false;
+    if (!isCreatedToday(payment)) return false;
     const term = searchTerm.toLowerCase();
     const matchesSearch =
       (payment.customer_name && payment.customer_name.toLowerCase().includes(term)) ||
@@ -1509,41 +1495,6 @@ function ManagerTransactions() {
                 <option value="Approved">{t.approved}</option>
                 <option value="Rejected">{t.rejected}</option>
               </StyledSelect>
-            </div>
-            <div className="manager-transactions-date-filters">
-              <label className="manager-date-filter-label">
-                <FaCalendarAlt aria-hidden />
-                <span>{t.fromDate || 'From'}</span>
-              </label>
-              <StyledDateInput
-                className="manager-date-filter-input"
-                value={dateFrom}
-                max={dateTo || undefined}
-                onChange={(e) => setDateFrom(e.target.value)}
-                title={t.fromDate || 'From date'}
-              />
-              <label className="manager-date-filter-label">
-                <span>{t.toDate || 'To'}</span>
-              </label>
-              <StyledDateInput
-                className="manager-date-filter-input"
-                value={dateTo}
-                min={dateFrom || undefined}
-                onChange={(e) => setDateTo(e.target.value)}
-                title={t.toDate || 'To date'}
-              />
-              {(dateFrom || dateTo) && (
-                <button
-                  type="button"
-                  className="manager-date-filter-clear"
-                  onClick={() => {
-                    setDateFrom('');
-                    setDateTo('');
-                  }}
-                >
-                  {t.clearDates || t.clear || 'Clear dates'}
-                </button>
-              )}
             </div>
           </div>
 
